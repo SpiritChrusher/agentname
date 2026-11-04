@@ -1096,6 +1096,14 @@ footer {
 
 .boot p { margin: 0; }
 
+.boot-brand {
+    font-family: var(--display);
+    font-size: clamp(1.2rem, 4vw, 1.8rem);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--cream);
+}
+
 .boot-bar {
     width: min(260px, 70vw);
     height: 6px;

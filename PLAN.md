@@ -127,3 +127,8 @@ Egy kis, szatirikus, statikus webapp: „Mi lett volna az ügynökneved a szocia
 - A user a kitalált vádlott; valós személyhez nincs kitalált bűn.
 - Valós események (Szent István törvényei, Vata-felkelés, Aranybulla, tatárjárás, Dózsa 1514, Mohács 1526) csak mintaeseményként.
 - Nincs etnikai/vallási csoportot célzó vád; az anakronizmus és a szatíra jelölve.
+
+## 8. Névváltás
+- A látható appnév **Történelmi Ügyosztály**, alcím **Mi lett volna az ügyed?**
+- A belső projekt/névtér `AgentName` marad; a GitHub Pages URL csak repóátnevezéskor változik.
+- Érintett: `index.html` (title, meta/OG, boot felirat), `README.md`; a későbbi PWA-manifest ezt a nevet használja.

@@ -1,7 +1,10 @@
-# agentname — Mi lett volna az ügynökneved – és az ügyed?
+# Történelmi Ügyosztály — Mi lett volna az ügyed?
 
-What would've been your agent name in socialist Hungary — and your scandal afterwards? A small,
-satirical generator written in Blazor WebAssembly (.NET 10), hosted on GitHub Pages.
+Your file in five Hungarian eras: a medieval verdict or rebellion, a socialist agent dossier, a
+privatisation scandal, a NER procurement, and an NVVH case. A small, satirical generator written
+in Blazor WebAssembly (.NET 10), hosted on GitHub Pages.
+
+A látható név **Történelmi Ügyosztály**; a repó és a belső projektnév továbbra is `agentname`.
 
 Öt korszak, öt téma (fülek; link: `#kozepkor`, `#szocializmus`, `#rendszervaltas`, `#ner`, `#vagyonvisszaszerzes`):
 
