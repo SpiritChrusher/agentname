@@ -1,0 +1,14 @@
+<section class="events" aria-label="A korszak közismert eseményei">
+    <h2>@Title</h2>
+    <ol>
+        @foreach (var (year, label) in Items)
+        {
+            <li><span class="ev-year">@year</span> <span class="ev-label">@label</span></li>
+        }
+    </ol>
+</section>
+
+@code {
+    [Parameter, EditorRequired] public string Title { get; set; } = "";
+    [Parameter, EditorRequired] public (string Year, string Label)[] Items { get; set; } = [];
+}

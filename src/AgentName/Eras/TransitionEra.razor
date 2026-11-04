@@ -1,0 +1,83 @@
+<header class="hero">
+    <p class="tt-header"><span>P666</span><span>HÍREK · GAZDASÁG</span><span>@ttDate</span></p>
+    <h1><span>Mi lett volna</span> <span>az ügyed?</span></h1>
+    <p class="lede">…a rendszerváltás és 2010 között. Privatizáltál, szőkítettél, vagy csak „tanácsadtál”?
+        Az adatlap most is önkéntes — a cégbíróság úgyis tudja.</p>
+</header>
+
+<form class="sheet form" @onsubmit="Generate" @onsubmit:preventDefault>
+    <h2>Cégalapítási nyomtatvány <small>(kitöltése önkéntes)</small></h2>
+    <div class="grid">
+        <CommonFields Input="Input" />
+        <label class="wide">
+            <span>Első autód</span>
+            <select @bind="Input.FirstCar">
+                <option value="">— nem adom meg —</option>
+                @foreach (var c in TransitionWords.Cars)
+                {
+                    <option value="@c.Label">@c.Label</option>
+                }
+            </select>
+        </label>
+    </div>
+    <button type="submit" class="go">@(result is null ? "Cég bejegyzése" : "Újabb cég bejegyzése")</button>
+</form>
+
+@if (result is not null)
+{
+    <article class="sheet card card-rv" @key="generation" aria-live="polite">
+        <div class="stamp">Hatálytalanítva</div>
+        <p class="file-no">@result.Court · @result.CourtNo</p>
+        <p class="label">Az ügyed neve</p>
+        <h2 class="casename">@result.CaseName</h2>
+
+        <dl>
+            <dt>Cég</dt><dd>@result.Company</dd>
+            <dt>Szereped</dt><dd>@result.Role</dd>
+            <dt>Év</dt><dd>@result.Year</dd>
+            <dt>Módszer</dt><dd>@result.Method</dd>
+            <dt>Elszívott összeg</dt><dd>@result.Amount</dd>
+            <dt>A pénz most</dt><dd>@result.Offshore</dd>
+            <dt>Szállítva</dt><dd>@result.Vehicle</dd>
+            <dt>Kimenetel</dt><dd>@result.Outcome</dd>
+            <dt>Mintaügy</dt><dd>@result.ReferenceCase</dd>
+        </dl>
+
+        <div class="actions">
+            <button type="button" class="ghost" @onclick="Generate">Újrasorsolás</button>
+            <CopyButton Text="@($"Az én ügyem {result.CaseName} lett volna ({result.Amount}, {result.Offshore}). Neked mi? {ShareUrl}")" />
+        </div>
+    </article>
+}
+
+<EventStrip Title="Az időszak közismert ügyei, eseményei" Items="TransitionWords.Events" />
+
+<footer>
+    Szatíra. A neked generált ügy, cég és szereplők kitaláltak. A „mintaügyek” közismert, nyilvános ügyekre utalnak;
+    tényállításként nem értelmezendők. Semmi nem kerül elküldésre — minden a böngésződben fut.
+</footer>
+
+<div class="ticker" aria-hidden="true">
+    <div class="ticker-track">
+        @for (var i = 0; i < 2; i++)
+        {
+            <span>BUX ▲ 3,2% · DM/FT 98,40 · USD/FT 214,7 · KÁRPÓTLÁSI JEGY 0,12 · PIRAMIS ▲ 30%/HÓ · FŰTŐOLAJ = GÁZOLAJ · POSTABANK ▼ · INFLÁCIÓ 28% · BOKROS-CSOMAG ÉRKEZIK ·&nbsp;</span>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public Inputs Input { get; set; } = default!;
+    [Parameter] public string ShareUrl { get; set; } = "";
+
+    private TransitionCase? result;
+    private int generation;
+    private string ttDate = "1996.09.13 21:37";
+
+    private void Generate()
+    {
+        result = TransitionScandal.Generate(Input);
+        ttDate = $"{result.Year}.{Random.Shared.Next(1, 13):00}.{Random.Shared.Next(1, 29):00} {Random.Shared.Next(0, 24):00}:{Random.Shared.Next(0, 60):00}";
+        generation++;
+    }
+}

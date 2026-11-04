@@ -1,0 +1,30 @@
+<nav class="tabs" aria-label="Korszak">
+    <div class="tabs-inner" role="tablist" @onkeydown="OnKey">
+        @foreach (var era in EraInfo.All)
+        {
+            var active = era == Current;
+            <button type="button" role="tab" class="tab @(active ? "active" : null)" data-era-tab="@EraInfo.Key(era)"
+                    aria-selected="@(active ? "true" : "false")" tabindex="@(active ? 0 : -1)"
+                    @ref="refs[(int)era]" @onclick="() => OnSelect.InvokeAsync(era)">
+                <span class="tab-years">@EraInfo.Years(era)</span>
+                <span class="tab-label">@EraInfo.Label(era)</span>
+            </button>
+        }
+    </div>
+</nav>
+
+@code {
+    [Parameter] public Era Current { get; set; }
+    [Parameter] public EventCallback<Era> OnSelect { get; set; }
+
+    private readonly ElementReference[] refs = new ElementReference[3];
+
+    private async Task OnKey(KeyboardEventArgs e)
+    {
+        var delta = e.Key switch { "ArrowRight" => 1, "ArrowLeft" => -1, _ => 0 };
+        if (delta == 0) return;
+        var next = (Era)(((int)Current + delta + 3) % 3);
+        await OnSelect.InvokeAsync(next);
+        await refs[(int)next].FocusAsync();
+    }
+}

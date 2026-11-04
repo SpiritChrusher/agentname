@@ -10,7 +10,27 @@
     --stamp: #c21d1d;
     --mono: "Courier Prime", "Courier New", monospace;
     --display: "Oswald", "Arial Narrow", Impact, sans-serif;
+    --pixel: "VT323", "Courier New", monospace;
+    --serif: "Playfair Display", Georgia, serif;
     --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+
+    /* teletext */
+    --tt-black: #000;
+    --tt-red: #ff2a2a;
+    --tt-green: #22ff22;
+    --tt-yellow: #ffff22;
+    --tt-blue: #2a2aff;
+    --tt-magenta: #ff22ff;
+    --tt-cyan: #22ffff;
+    --tt-white: #fff;
+
+    /* NER */
+    --ner-blue: #0b3d91;
+    --ner-deep: #04173f;
+    --ner-yellow: #ffd200;
+    --ner-gold: #b8912a;
+    --ner-red: #ce2939;
+    --ner-green: #477050;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -18,7 +38,6 @@
 html, body { margin: 0; min-height: 100%; }
 
 body {
-    background: radial-gradient(ellipse at 50% 30%, #4a0b0b 0%, #250606 45%, var(--night) 80%);
     background-color: var(--night);
     color: var(--cream);
     font-family: var(--mono);
@@ -26,15 +45,34 @@ body {
     overflow-x: hidden;
 }
 
-/* ---------- Background: rotating rays, glowing star, film grain ---------- */
+[hidden] { display: none !important; }
 
-.sky {
+/* =================================================================
+   Backgrounds — all three live in the DOM and cross-fade on switch
+   ================================================================= */
+
+.bg {
     position: fixed;
     inset: 0;
-    z-index: -2;
+    z-index: -1;
     overflow: hidden;
     pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .6s ease, visibility 0s linear .6s;
 }
+
+.app[data-era=szoc] .bg-szoc,
+.app[data-era=rv] .bg-rv,
+.app[data-era=ner] .bg-ner {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity .6s ease, visibility 0s;
+}
+
+/* ---- Szocializmus: rotating rays, glowing star, film grain ---- */
+
+.bg-szoc { background: radial-gradient(ellipse at 50% 30%, #4a0b0b 0%, #250606 45%, var(--night) 80%); }
 
 .rays {
     position: absolute;
@@ -65,10 +103,8 @@ body {
 }
 
 .grain {
-    position: fixed;
+    position: absolute;
     inset: 0;
-    z-index: -1;
-    pointer-events: none;
     background-image:
         repeating-linear-gradient(0deg, rgba(0, 0, 0, .18) 0 1px, transparent 1px 3px),
         var(--noise);
@@ -78,17 +114,177 @@ body {
 
 @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
 @keyframes glow {
-    0%, 100% { opacity: .42; filter: drop-shadow(0 0 0 transparent); }
+    0%, 100% { opacity: .42; }
     50% { opacity: .6; }
 }
 
-/* ---------- Layout ---------- */
+/* ---- Rendszerváltás: teletext mosaic, colour bars, CRT ---- */
+
+.bg-rv { background: radial-gradient(ellipse at 50% 40%, #0c0c1c 0%, #000 75%); }
+
+.tt-bars {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 10px;
+    background: linear-gradient(90deg,
+        var(--tt-white) 0 14.28%, var(--tt-yellow) 0 28.57%, var(--tt-cyan) 0 42.85%, var(--tt-green) 0 57.14%,
+        var(--tt-magenta) 0 71.42%, var(--tt-red) 0 85.71%, var(--tt-blue) 0 100%);
+    opacity: .85;
+}
+
+.tt-mosaic {
+    /* chunky teletext "sixel" blocks drifting at the edges */
+    position: absolute;
+    inset: -40px;
+    background-image:
+        linear-gradient(90deg, var(--tt-blue) 0 24px, transparent 24px 96px),
+        linear-gradient(180deg, var(--tt-magenta) 0 16px, transparent 16px 80px),
+        linear-gradient(90deg, var(--tt-cyan) 0 16px, transparent 16px 112px),
+        linear-gradient(180deg, var(--tt-green) 0 24px, transparent 24px 144px);
+    background-size: 96px 80px, 96px 80px, 112px 144px, 112px 144px;
+    -webkit-mask-image: linear-gradient(90deg, #000 0%, transparent 22%, transparent 78%, #000 100%);
+    mask-image: linear-gradient(90deg, #000 0%, transparent 22%, transparent 78%, #000 100%);
+    opacity: .28;
+    image-rendering: pixelated;
+    animation: mosaic 18s steps(12) infinite;
+}
+
+@keyframes mosaic { to { transform: translateY(80px); } }
+
+.crt {
+    position: absolute;
+    inset: 0;
+    background:
+        repeating-linear-gradient(0deg, rgba(0, 0, 0, .45) 0 2px, transparent 2px 4px),
+        radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, .75) 100%);
+    animation: flicker 4s steps(2) infinite;
+}
+
+@keyframes flicker { 50% { opacity: .92; } }
+
+/* ---- NER: blue poster, EU stars, national ribbon, stadium ---- */
+
+.bg-ner { background: radial-gradient(ellipse at 50% 20%, #1857c4 0%, var(--ner-blue) 40%, var(--ner-deep) 100%); }
+
+.eu-stars {
+    position: absolute;
+    right: -6vmin;
+    top: -6vmin;
+    width: min(56vmin, 460px);
+    fill: var(--ner-yellow);
+    opacity: .22;
+    animation: spin-plain 120s linear infinite;
+}
+
+@keyframes spin-plain { to { transform: rotate(360deg); } }
+
+.slogans {
+    position: absolute;
+    inset: 12% -20% auto;
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(2.4rem, 8vw, 5.5rem);
+    line-height: 1.15;
+    white-space: nowrap;
+    color: #fff;
+    opacity: .06;
+    transform: rotate(-6deg);
+}
+
+.slogans p { margin: 0; animation: drift 60s linear infinite alternate; }
+.slogans p:nth-child(2) { animation-direction: alternate-reverse; animation-duration: 75s; }
+
+@keyframes drift { from { transform: translateX(-12%); } to { transform: translateX(8%); } }
+
+.ribbon {
+    position: absolute;
+    left: -10%;
+    right: -10%;
+    top: 62%;
+    height: 54px;
+    background: linear-gradient(180deg, var(--ner-red) 0 33.3%, #fff 0 66.6%, var(--ner-green) 0);
+    transform: rotate(-7deg);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, .35);
+    opacity: .5;
+    animation: wave 9s ease-in-out infinite;
+}
+
+@keyframes wave { 50% { transform: rotate(-5deg) translateY(10px); } }
+
+.stadium {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 22vh;
+    fill: var(--ner-deep);
+    stroke: var(--ner-deep);
+    opacity: .9;
+}
+
+/* =================================================================
+   Era tabs (time machine)
+   ================================================================= */
+
+.tabs {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    padding: 10px 16px;
+    background: rgba(0, 0, 0, .55);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(255, 255, 255, .12);
+}
+
+.tabs-inner {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    max-width: 720px;
+    margin: 0 auto;
+}
+
+.tab {
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: 230px;
+    display: grid;
+    gap: 0;
+    padding: 6px 8px;
+    border: 1px solid rgba(255, 255, 255, .25);
+    border-radius: 4px;
+    background: rgba(255, 255, 255, .04);
+    color: var(--cream);
+    text-align: center;
+    transition: background .2s, border-color .2s, color .2s;
+}
+
+.tab:hover { background: rgba(255, 255, 255, .1); }
+.tab:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+
+.tab-years { font-family: var(--display); font-size: clamp(1rem, 4vw, 1.25rem); letter-spacing: .04em; }
+.tab-label { font-size: .72rem; text-transform: uppercase; letter-spacing: .12em; opacity: .8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.tab.active[data-era-tab=szoc] { background: var(--blood); border-color: #e3302f; color: var(--cream); }
+.tab.active[data-era-tab=rv] { background: var(--tt-yellow); border-color: var(--tt-yellow); color: #000; font-family: var(--pixel); }
+.tab.active[data-era-tab=rv] .tab-years { font-family: var(--pixel); font-size: clamp(1.2rem, 5vw, 1.55rem); }
+.tab.active[data-era-tab=ner] { background: #fff; border-color: var(--ner-yellow); color: var(--ner-blue); box-shadow: inset 0 -4px 0 var(--ner-yellow); }
+
+/* =================================================================
+   Shared layout (socialist look is the default)
+   ================================================================= */
 
 .wrap {
     width: min(720px, 100% - 32px);
     margin: 0 auto;
-    padding: clamp(32px, 8vh, 72px) 0 40px;
+    padding: clamp(28px, 6vh, 60px) 0 40px;
 }
+
+.era { animation: era-in .45s ease both; }
+@keyframes era-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 
 .hero { text-align: center; margin-bottom: 28px; }
 
@@ -112,8 +308,6 @@ h1 {
 }
 
 .lede { margin: 14px auto 0; max-width: 34em; font-size: 1.05rem; }
-
-/* ---------- Paper sheets ---------- */
 
 .sheet {
     position: relative;
@@ -199,9 +393,9 @@ button { font: inherit; cursor: pointer; }
 .go:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--blood-dark), 0 4px 10px rgba(0, 0, 0, .35); }
 .go:focus-visible, .ghost:focus-visible { outline: 3px solid var(--cream); outline-offset: 3px; }
 
-/* ---------- Dossier ---------- */
+/* ---------- Result card (dossier) ---------- */
 
-.dossier {
+.dossier, .card {
     margin-top: 34px;
     transform: rotate(.7deg);
     animation: slide-in .55s cubic-bezier(.2, .9, .3, 1.2) both;
@@ -250,6 +444,7 @@ button { font: inherit; cursor: pointer; }
 }
 
 .file-no { margin: 0 0 18px 34px; font-size: .82rem; color: var(--ink-soft); padding-right: 150px; }
+.card .file-no { margin-left: 0; }
 
 .label {
     margin: 0;
@@ -283,6 +478,19 @@ button { font: inherit; cursor: pointer; }
 
 @keyframes type { to { width: calc(var(--n) * 1ch + .1em); } }
 @keyframes caret { 50% { border-color: transparent; } }
+
+/* Case names wrap instead of typing (they can be long). */
+.sheet .casename {
+    margin: 4px 0 22px;
+    font-size: clamp(1.6rem, 6.5vw, 2.7rem);
+    line-height: 1.15;
+    text-transform: none;
+    letter-spacing: 0;
+    overflow-wrap: anywhere;
+    animation: case-in .6s .3s ease both;
+}
+
+@keyframes case-in { from { opacity: 0; filter: blur(6px); } to { opacity: 1; filter: none; } }
 
 dl {
     display: grid;
@@ -320,6 +528,41 @@ dd { margin: 0; }
 
 .ghost:hover { background: var(--ink); color: var(--paper); }
 
+/* ---------- Event strip ---------- */
+
+.events { margin-top: 40px; }
+
+.events h2 {
+    margin: 0 0 12px;
+    font-family: var(--display);
+    font-weight: 500;
+    font-size: 1rem;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    text-align: center;
+    opacity: .85;
+}
+
+.events ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+}
+
+.events li {
+    padding: 4px 10px;
+    border: 1px solid rgba(255, 255, 255, .3);
+    border-radius: 3px;
+    background: rgba(0, 0, 0, .35);
+    font-size: .85rem;
+}
+
+.ev-year { font-weight: 700; margin-right: 4px; }
+
 footer {
     margin-top: 36px;
     font-size: .82rem;
@@ -327,7 +570,230 @@ footer {
     opacity: .7;
 }
 
-/* ---------- Boot screen ---------- */
+/* =================================================================
+   Rendszerváltás theme — teletext page + photocopied company record
+   ================================================================= */
+
+.era-rv { font-family: var(--pixel); font-size: 1.2rem; }
+
+.era-rv .hero { text-align: left; }
+
+.tt-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 0 0 14px;
+    font-family: var(--pixel);
+    font-size: clamp(1.1rem, 4vw, 1.5rem);
+    color: var(--tt-white);
+    background: var(--tt-blue);
+    padding: 0 8px;
+}
+
+.tt-header span:first-child { color: var(--tt-yellow); }
+.tt-header span:last-child { color: var(--tt-cyan); white-space: nowrap; }
+
+.era-rv h1 {
+    font-family: var(--pixel);
+    font-weight: 400;
+    font-size: clamp(2.6rem, 11vw, 5.2rem);
+    line-height: .95;
+    letter-spacing: 0;
+    text-shadow: none;
+    color: var(--tt-yellow);
+}
+
+.era-rv h1 span { display: inline-block; }
+.era-rv h1 span:last-child { color: #000; background: var(--tt-cyan); padding: 0 .15em; margin-top: .08em; }
+
+.era-rv .lede { margin-left: 0; color: var(--tt-white); font-size: 1.3rem; line-height: 1.25; }
+
+.era-rv .form {
+    transform: none;
+    background: #000;
+    color: var(--tt-white);
+    border: 3px solid var(--tt-cyan);
+    border-radius: 0;
+    box-shadow: 0 0 0 3px #000, 0 0 30px rgba(34, 255, 255, .25);
+}
+
+.era-rv .form h2 { font-family: var(--pixel); font-size: 1.7rem; font-weight: 400; color: var(--tt-green); letter-spacing: .04em; }
+.era-rv .form h2 small { font-family: var(--pixel); font-size: 1.1rem; color: var(--tt-cyan); }
+.era-rv label span { font-family: var(--pixel); font-size: 1.1rem; letter-spacing: .06em; color: var(--tt-cyan); }
+
+.era-rv input, .era-rv select {
+    font-family: var(--pixel);
+    font-size: 1.35rem;
+    color: var(--tt-yellow);
+    border-bottom: 2px dashed var(--tt-magenta);
+}
+
+.era-rv input::placeholder { color: rgba(255, 255, 255, .35); }
+.era-rv input:focus, .era-rv select:focus { border-bottom: 2px solid var(--tt-yellow); }
+.era-rv select option { background: #000; color: var(--tt-yellow); }
+
+.era-rv .go {
+    border-radius: 0;
+    background: var(--tt-yellow);
+    color: #000;
+    font-family: var(--pixel);
+    font-size: 1.8rem;
+    letter-spacing: .06em;
+    box-shadow: 6px 6px 0 var(--tt-magenta);
+}
+
+.era-rv .go:active { transform: translate(4px, 4px); box-shadow: 2px 2px 0 var(--tt-magenta); }
+
+/* photocopied company record */
+.card-rv {
+    font-family: var(--mono);
+    font-size: 1rem;
+    color: #151515;
+    background:
+        linear-gradient(90deg, transparent 0 8%, rgba(0, 0, 0, .06) 8.2% 8.6%, transparent 8.8% 71%, rgba(0, 0, 0, .05) 71.2% 71.5%, transparent 71.7%),
+        radial-gradient(ellipse at 100% 0%, rgba(0, 0, 0, .25), transparent 40%),
+        var(--noise),
+        #e6e6e1;
+}
+
+.card-rv .stamp {
+    color: #1d3fbf;
+    border-color: #1d3fbf;
+}
+.card-rv .casename { font-family: var(--mono); font-weight: 700; }
+.card-rv dt, .card-rv .label, .card-rv .file-no { color: #444; }
+.card-rv .ghost { border-color: #151515; color: #151515; }
+
+.era-rv .events h2 { font-family: var(--pixel); font-size: 1.4rem; color: var(--tt-green); letter-spacing: .06em; }
+.era-rv .events li { border: 0; border-radius: 0; background: var(--tt-blue); color: var(--tt-white); font-size: 1.15rem; }
+.era-rv .events li:nth-child(3n+2) { background: var(--tt-magenta); color: #000; }
+.era-rv .events li:nth-child(3n) { background: var(--tt-green); color: #000; }
+.era-rv .ev-year { color: var(--tt-yellow); }
+.era-rv .events li:nth-child(3n+2) .ev-year, .era-rv .events li:nth-child(3n) .ev-year { color: #000; }
+
+.era-rv footer { font-size: 1.05rem; color: var(--tt-white); padding-bottom: 40px; }
+
+.ticker {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+    overflow: hidden;
+    background: var(--tt-red);
+    color: var(--tt-yellow);
+    font-family: var(--pixel);
+    font-size: 1.3rem;
+    line-height: 1.6;
+    white-space: nowrap;
+}
+
+.ticker-track { display: inline-block; animation: ticker 40s linear infinite; }
+@keyframes ticker { to { transform: translateX(-50%); } }
+
+/* =================================================================
+   NER theme — blue poster + official procurement notice
+   ================================================================= */
+
+.era-ner .kicker { color: var(--ner-yellow); opacity: 1; font-family: var(--display); letter-spacing: .14em; }
+
+.era-ner h1 {
+    color: #fff;
+    text-shadow: 0 4px 0 rgba(0, 0, 0, .25);
+    letter-spacing: .01em;
+}
+
+.era-ner h1 mark {
+    display: inline;
+    background: var(--ner-yellow);
+    color: var(--ner-blue);
+    padding: 0 .12em;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    text-shadow: none;
+}
+
+.era-ner .lede { color: #fff; font-family: var(--serif); font-size: 1.15rem; }
+
+.era-ner .form {
+    transform: none;
+    background: #fff;
+    border-radius: 6px;
+    border-top: 10px solid var(--ner-blue);
+    box-shadow: 0 24px 50px rgba(0, 0, 0, .45);
+    color: #1b2433;
+}
+
+.era-ner .form h2 { color: var(--ner-blue); font-weight: 700; }
+.era-ner .form h2 small { color: #5c6b82; }
+.era-ner label span { color: #5c6b82; font-family: var(--display); letter-spacing: .08em; }
+
+.era-ner input, .era-ner select {
+    font-family: system-ui, "Segoe UI", sans-serif;
+    border: 1px solid #b8c4d6;
+    border-radius: 4px;
+    padding: 8px 10px;
+    color: #1b2433;
+    background: #f5f8fc;
+}
+
+.era-ner input:focus, .era-ner select:focus { border: 1px solid var(--ner-blue); box-shadow: 0 0 0 3px rgba(11, 61, 145, .2); }
+.era-ner input::placeholder { color: #8a97ab; }
+.era-ner select option { background: #fff; color: #1b2433; }
+
+.era-ner .go {
+    background: var(--ner-yellow);
+    color: var(--ner-blue);
+    font-weight: 700;
+    border-radius: 6px;
+    box-shadow: 0 4px 0 #b39300, 0 10px 22px rgba(0, 0, 0, .3);
+}
+
+.era-ner .go:active { box-shadow: 0 1px 0 #b39300, 0 4px 10px rgba(0, 0, 0, .3); }
+
+/* official procurement notice */
+.card-ner {
+    background:
+        linear-gradient(180deg, var(--ner-red) 0 6px, #fff 6px 12px, var(--ner-green) 12px 18px, transparent 18px),
+        radial-gradient(ellipse at center, transparent 60%, rgba(184, 145, 42, .12) 100%),
+        #fffdf6;
+    color: #1b2433;
+    padding-top: 40px;
+    border: 1px solid #d9cfae;
+    outline: 3px double #d9cfae;
+    outline-offset: -10px;
+    transform: rotate(-.4deg);
+}
+
+.card-ner .stamp {
+    --stamp: var(--ner-gold);
+    top: 34px;
+    width: 104px;
+    height: 104px;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border-radius: 50%;
+    border: 4px double var(--ner-gold);
+    color: var(--ner-gold);
+    font-size: 1.05rem;
+    background: radial-gradient(circle, rgba(255, 210, 0, .18), transparent 70%);
+    mix-blend-mode: normal;
+}
+
+.card-ner .casename { font-family: var(--serif); font-weight: 700; color: var(--ner-blue); }
+.card-ner .file-no, .card-ner dt, .card-ner .label { color: #5c6b82; }
+.card-ner dl { border-top: 1px solid #d9cfae; }
+.card-ner .ghost { color: var(--ner-blue); border-color: var(--ner-blue); border-radius: 6px; }
+.card-ner .ghost:hover { background: var(--ner-blue); color: #fff; }
+
+.era-ner .events h2 { color: #fff; }
+.era-ner .events li { background: rgba(255, 255, 255, .92); color: var(--ner-blue); border: 0; border-left: 4px solid var(--ner-yellow); }
+.era-ner footer { color: #fff; }
+
+/* =================================================================
+   Boot screen + error bar
+   ================================================================= */
 
 .boot {
     min-height: 100vh;
@@ -371,7 +837,7 @@ footer {
     bottom: 0;
     left: 0;
     right: 0;
-    z-index: 10;
+    z-index: 30;
     padding: 12px 16px;
     background: var(--cream);
     color: var(--ink);
@@ -381,14 +847,21 @@ footer {
 #blazor-error-ui .reload { color: var(--blood); margin-left: 8px; }
 #blazor-error-ui .dismiss { cursor: pointer; position: absolute; right: 16px; top: 10px; }
 
-/* ---------- Responsive & motion ---------- */
+/* =================================================================
+   Responsive & motion
+   ================================================================= */
 
 @media (max-width: 560px) {
     .grid { grid-template-columns: 1fr; }
     dl { grid-template-columns: 1fr; gap: 2px; }
     dd { margin-bottom: 10px; }
     .file-no { padding-right: 0; margin-top: 64px; }
-    .form, .dossier { transform: none; }
+    .card-ner .file-no { margin-top: 96px; }
+    .form, .dossier, .card { transform: none; }
+    .tabs { padding: 8px; }
+    .tabs-inner { gap: 6px; }
+    .tab-label { font-size: .62rem; letter-spacing: .06em; }
+    .tt-header { flex-wrap: wrap; }
     @keyframes slide-in {
         from { opacity: 0; transform: translateY(40px); }
         to { opacity: 1; transform: none; }
@@ -396,7 +869,8 @@ footer {
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .rays, .star, .boot-star { animation: none; }
-    .dossier, .stamp { animation: none; }
+    .rays, .star, .boot-star, .tt-mosaic, .crt, .eu-stars, .slogans p, .ribbon, .ticker-track { animation: none; }
+    .era, .dossier, .card, .stamp, .casename { animation: none; }
+    .bg { transition: none; }
     .typed { animation: none; width: auto; border-right: 0; }
 }

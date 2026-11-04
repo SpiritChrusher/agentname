@@ -1,0 +1,32 @@
+<label>
+    <span>Név</span>
+    <input type="text" maxlength="60" placeholder="pl. Kovács Pista" autocomplete="off" @bind="Input.Name" />
+</label>
+<label>
+    <span>Születési év</span>
+    <input type="number" min="1900" max="2030" placeholder="pl. 1956" @bind="Input.BirthYear" />
+</label>
+<label>
+    <span>Megye</span>
+    <select @bind="Input.County">
+        <option value="">— nem adom meg —</option>
+        @foreach (var c in WordLists.Counties)
+        {
+            <option value="@c.County">@c.County</option>
+        }
+    </select>
+</label>
+<label>
+    <span>Foglalkozás</span>
+    <select @bind="Input.Occupation">
+        <option value="">— nem adom meg —</option>
+        @foreach (var o in WordLists.Occupations)
+        {
+            <option value="@o.Label">@o.Label</option>
+        }
+    </select>
+</label>
+
+@code {
+    [Parameter, EditorRequired] public Inputs Input { get; set; } = default!;
+}

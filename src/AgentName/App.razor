@@ -1,122 +1,92 @@
-﻿@inject IJSRuntime JS
+﻿@implements IDisposable
 @inject NavigationManager Nav
+@inject IJSRuntime JS
 
-<div class="sky" aria-hidden="true">
-    <div class="rays"></div>
-    <div class="star"></div>
-</div>
-<div class="grain" aria-hidden="true"></div>
-
-<main class="wrap">
-    <header class="hero">
-        <p class="kicker">Belügyminisztérium · III. Főcsoportfőnökség</p>
-        <h1>Mi lett volna az ügynökneved?</h1>
-        <p class="lede">…a szocialista Magyarországon. Töltsd ki az adatlapot — nem kötelező, mi úgyis tudjuk.</p>
-    </header>
-
-    <form class="sheet form" @onsubmit="Generate" @onsubmit:preventDefault>
-        <h2>Személyi adatlap <small>(kitöltése önkéntes)</small></h2>
-        <div class="grid">
-            <label>
-                <span>Név</span>
-                <input type="text" maxlength="60" placeholder="pl. Kovács Pista" autocomplete="off" @bind="input.Name" />
-            </label>
-            <label>
-                <span>Születési év</span>
-                <input type="number" min="1900" max="2030" placeholder="pl. 1956" @bind="input.BirthYear" />
-            </label>
-            <label>
-                <span>Megye</span>
-                <select @bind="input.County">
-                    <option value="">— nem adom meg —</option>
-                    @foreach (var c in WordLists.Counties)
-                    {
-                        <option value="@c.County">@c.County</option>
-                    }
-                </select>
-            </label>
-            <label>
-                <span>Foglalkozás</span>
-                <select @bind="input.Occupation">
-                    <option value="">— nem adom meg —</option>
-                    @foreach (var o in WordLists.Occupations)
-                    {
-                        <option value="@o.Label">@o.Label</option>
-                    }
-                </select>
-            </label>
-            <label class="wide">
-                <span>Kedvenc gyerekkori műsor</span>
-                <select @bind="input.Show">
-                    <option value="">— nem adom meg —</option>
-                    @foreach (var s in WordLists.Shows)
-                    {
-                        <option value="@s.Label">@s.Label</option>
-                    }
-                </select>
-            </label>
+<div class="app" data-era="@EraInfo.Key(era)">
+    <div class="bg bg-szoc" aria-hidden="true">
+        <div class="rays"></div>
+        <div class="star"></div>
+        <div class="grain"></div>
+    </div>
+    <div class="bg bg-rv" aria-hidden="true">
+        <div class="tt-bars"></div>
+        <div class="tt-mosaic"></div>
+        <div class="crt"></div>
+    </div>
+    <div class="bg bg-ner" aria-hidden="true">
+        <svg class="eu-stars" viewBox="-60 -60 120 120">
+            @for (var i = 0; i < 12; i++)
+            {
+                var a = i * Math.PI / 6;
+                <use href="#ner-star" x="@((Math.Sin(a) * 45).ToString("0.##", System.Globalization.CultureInfo.InvariantCulture))" y="@((-Math.Cos(a) * 45).ToString("0.##", System.Globalization.CultureInfo.InvariantCulture))" />
+            }
+            <defs>
+                <polygon id="ner-star" points="0,-6 1.76,-1.85 6.18,-1.85 2.6,0.7 3.53,5 0,2.6 -3.53,5 -2.6,0.7 -6.18,-1.85 -1.76,-1.85" />
+            </defs>
+        </svg>
+        <div class="slogans">
+            <p>NEMZETI · EGYÜTTMŰKÖDÉS · STADION · KISVASÚT · KILÁTÓ · ALAPÍTVÁNY ·</p>
+            <p>KÖZBESZERZÉS · EGY AJÁNLAT · KUTATÓINTÉZET · SZÖKŐKÚT · TÉRKŐ ·</p>
+            <p>KONZULTÁCIÓ · KÉK PLAKÁT · LED-IZZÓ · LOMBKORONA-SÉTÁNY · KASTÉLY ·</p>
         </div>
-        <button type="submit" class="go">@(dossier is null ? "Akta lekérése" : "Másik akta lekérése")</button>
-    </form>
+        <div class="ribbon"></div>
+        <svg class="stadium" viewBox="0 0 1200 160" preserveAspectRatio="xMidYMax slice">
+            <path d="M0 160V118c120-4 210-30 300-58 40-12 70-40 120-48h360c50 8 80 36 120 48 90 28 180 54 300 58v42z" />
+            <path d="M330 52 420 4M870 52 780 4M420 4h360" fill="none" stroke-width="5" />
+            <rect x="415" y="0" width="8" height="40" /><rect x="777" y="0" width="8" height="40" />
+        </svg>
+    </div>
 
-    @if (dossier is not null)
-    {
-        <article class="sheet dossier" @key="generation" aria-live="polite">
-            <div class="stamp">Szigorúan titkos!</div>
-            <p class="file-no">@dossier.Department · Dosszié: @dossier.FileNumber</p>
-            <p class="label">Fedőnév</p>
-            <h2 class="codename" style="--n:@(dossier.CodeName.Length + 2)"><span class="typed">„@dossier.CodeName”</span></h2>
+    <EraTabs Current="era" OnSelect="Select" />
 
-            <dl>
-                <dt>Alany</dt><dd>@dossier.Subject</dd>
-                <dt>Minősítés</dt><dd>@dossier.Category</dd>
-                <dt>Beszervezve</dt><dd>@dossier.RecruitYear, @dossier.Basis</dd>
-                <dt>Tartótiszt</dt><dd>@dossier.Handler</dd>
-                <dt>Találkozó</dt><dd>@dossier.MeetingPlace</dd>
-                <dt>Célszemély(ek)</dt><dd>@dossier.Target</dd>
-                <dt>Jelentések</dt><dd>@dossier.Reports db</dd>
-                <dt>Jutalom</dt><dd>@dossier.Reward</dd>
-                <dt>Értékelés</dt><dd>@dossier.Remark</dd>
-            </dl>
-
-            <div class="actions">
-                <button type="button" class="ghost" @onclick="Generate">Újrasorsolás</button>
-                <button type="button" class="ghost" @onclick="Copy">@copyLabel</button>
-            </div>
-        </article>
-    }
-
-    <footer>
-        Szatíra. Minden adat véletlenszerűen generált; bármilyen egyezés valós fedőnévvel vagy személlyel a véletlen műve.
-        Semmi nem kerül elküldésre — minden a böngésződben fut.
-    </footer>
-</main>
+    <main class="wrap">
+        <section class="era era-szoc" hidden="@(era != Era.Szoc)">
+            <SocialistEra Input="input" ShareUrl="@Share(Era.Szoc)" />
+        </section>
+        <section class="era era-rv" hidden="@(era != Era.Rv)">
+            <TransitionEra Input="input" ShareUrl="@Share(Era.Rv)" />
+        </section>
+        <section class="era era-ner" hidden="@(era != Era.Ner)">
+            <NerEra Input="input" ShareUrl="@Share(Era.Ner)" />
+        </section>
+    </main>
+</div>
 
 @code {
     private readonly Inputs input = new();
-    private Dossier? dossier;
-    private int generation;
-    private string copyLabel = "Másolás";
+    private Era era;
 
-    private void Generate()
+    protected override void OnInitialized()
     {
-        dossier = CodeNameGenerator.Generate(input);
-        generation++;
-        copyLabel = "Másolás";
+        era = EraInfo.FromUri(Nav.Uri);
+        Nav.LocationChanged += OnLocationChanged;
     }
 
-    private async Task Copy()
+    private string Share(Era e) => $"{Nav.BaseUri}#{EraInfo.Hash(e)}";
+
+    private async Task Select(Era next)
     {
-        if (dossier is null) return;
-        var text = $"Az ügynöknevem „{dossier.CodeName}” lett volna ({dossier.FileNumber}). Neked mi lett volna? {Nav.BaseUri}";
-        try
-        {
-            await JS.InvokeVoidAsync("navigator.clipboard.writeText", text);
-            copyLabel = "Kimásolva ✓";
-        }
-        catch (JSException)
-        {
-            copyLabel = "Nem sikerült :(";
-        }
+        if (next == era) return;
+        era = next;
+        // Hash-only NavigateTo doesn't raise LocationChanged, so the state is set above;
+        // LocationChanged still handles back/forward (popstate).
+        Nav.NavigateTo("#" + EraInfo.Hash(next));
+        await ScrollTop();
     }
+
+    private async void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        var next = EraInfo.FromUri(e.Location);
+        if (next == era) return;
+        era = next;
+        StateHasChanged();
+        await ScrollTop();
+    }
+
+    private async Task ScrollTop()
+    {
+        try { await JS.InvokeVoidAsync("scrollTo", 0, 0); } catch (JSException) { }
+    }
+
+    public void Dispose() => Nav.LocationChanged -= OnLocationChanged;
 }

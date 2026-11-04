@@ -1,0 +1,29 @@
+@inject IJSRuntime JS
+
+<button type="button" class="ghost" @onclick="Copy">@label</button>
+
+@code {
+    [Parameter, EditorRequired] public string Text { get; set; } = "";
+
+    private string label = "Másolás";
+    private string? lastText;
+
+    protected override void OnParametersSet()
+    {
+        if (Text != lastText) label = "Másolás";
+        lastText = Text;
+    }
+
+    private async Task Copy()
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("navigator.clipboard.writeText", Text);
+            label = "Kimásolva ✓";
+        }
+        catch (JSException)
+        {
+            label = "Nem sikerült :(";
+        }
+    }
+}

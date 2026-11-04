@@ -1,14 +1,5 @@
 namespace AgentName.Generator;
 
-public sealed class Inputs
-{
-    public string? Name { get; set; }
-    public int? BirthYear { get; set; }
-    public string County { get; set; } = "";
-    public string Show { get; set; } = "";
-    public string Occupation { get; set; } = "";
-}
-
 public sealed record Dossier(
     string Subject,
     string CodeName,
@@ -35,7 +26,7 @@ public static class CodeNameGenerator
         var name = input.Name?.Trim();
         var show = Array.Find(WordLists.Shows, s => s.Label == input.Show);
         var occupation = Array.Find(WordLists.Occupations, o => o.Label == input.Occupation);
-        var town = Array.Find(WordLists.Counties, c => c.County == input.County).Town;
+        var town = input.Town;
 
         var codeName = MakeCodeName(rng, name, show);
 
@@ -117,5 +108,5 @@ public static class CodeNameGenerator
         return rng.NextDouble() < 0.3 ? $"{Pick(rng, WordLists.Adjectives)} {noun}" : noun;
     }
 
-    private static T Pick<T>(Random rng, T[] items) => items[rng.Next(items.Length)];
+    private static T Pick<T>(Random rng, T[] items) => rng.Pick(items);
 }

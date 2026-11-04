@@ -1,12 +1,22 @@
-# agentname — Mi lett volna az ügynökneved?
+# agentname — Mi lett volna az ügynökneved – és az ügyed?
 
-What would've been your agent name in socialist Hungary? A small, satirical code-name generator
-written in Blazor WebAssembly (.NET 10), hosted on GitHub Pages.
+What would've been your agent name in socialist Hungary — and your scandal afterwards? A small,
+satirical generator written in Blazor WebAssembly (.NET 10), hosted on GitHub Pages.
 
-Töltsd ki az (önkéntes) adatlapot — név, születési év, megye, foglalkozás, kedvenc gyerekkori
-műsor —, és kapsz egy véletlenszerű fedőnevet egy „szigorúan titkos” dossziéval együtt.
-Minden a böngészőben fut, semmi nem kerül elküldésre. Szatíra: a szólisták általános szavakból
-állnak, valós fedőneveket vagy személyeket nem tartalmaznak.
+Három korszak, három téma (fülek; link: `#szocializmus`, `#rendszervaltas`, `#ner`):
+
+| Korszak | Mit kapsz | Dizájn |
+|---|---|---|
+| 1957–1989, szocializmus (alapértelmezett) | fedőnév és „szigorúan titkos” dosszié | vörös csillag, írógépes akta |
+| 1990–2010, rendszerváltás | privatizációs/szőkítéses ügy, fiktív cég, cégkivonat | teletext, CRT |
+| 2010–2026, NER | közbeszerzés, nyertes ajánlattevő, túlárazás | kék plakát, hivatalos értesítő |
+
+Minden mező opcionális, a közös adatok (név, év, megye, foglalkozás) megmaradnak fülváltáskor.
+Minden a böngészőben fut, semmi nem kerül elküldésre.
+
+Szatíra: a neked generált fedőnév, ügy, cég és szereplők kitaláltak. A „mintaügyek” és az
+eseménysávok közismert, nyilvános ügyekre utalnak (`Generator/TransitionWords.cs`,
+`Generator/NerWords.cs` → `ReferenceCases`, `Events`); tényállításként nem értelmezendők.
 
 ## Run locally
 

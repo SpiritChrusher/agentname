@@ -1,0 +1,74 @@
+<header class="hero">
+    <p class="kicker">Nemzeti Együttműködés Rendszere · Közbeszerzési Tájékoztató</p>
+    <h1>Mi lett volna <mark>a te közbeszerzésed?</mark></h1>
+    <p class="lede">…2010 és 2026 között. Egy érvényes ajánlat, százszázalékos siker.
+        Az adatlap önkéntes — a nyertes úgyis megvan már.</p>
+</header>
+
+<form class="sheet form" @onsubmit="Generate" @onsubmit:preventDefault>
+    <h2>Ajánlattételi adatlap <small>(kitöltése önkéntes)</small></h2>
+    <div class="grid">
+        <CommonFields Input="Input" />
+        <label class="wide">
+            <span>Kapcsolati tőke</span>
+            <select @bind="Input.Connection">
+                <option value="">— nem adom meg —</option>
+                @foreach (var c in NerWords.Connections)
+                {
+                    <option value="@c.Label">@c.Label</option>
+                }
+            </select>
+        </label>
+    </div>
+    <button type="submit" class="go">@(result is null ? "Ajánlat benyújtása" : "Újabb ajánlat benyújtása")</button>
+</form>
+
+@if (result is not null)
+{
+    <article class="sheet card card-ner" @key="generation" aria-live="polite">
+        <div class="stamp">@(result.Outsider ? "Elutasítva" : "Nyertes")</div>
+        <p class="file-no">Eredményhirdetés · KÉ-@result.ProcNo</p>
+        <p class="label">A projekt neve</p>
+        <h2 class="casename">@result.CaseName</h2>
+
+        <dl>
+            <dt>Nyertes ajánlattevő</dt><dd>@result.Winner</dd>
+            <dt>Érvényes ajánlatok</dt><dd>1 db</dd>
+            <dt>Tárgy</dt><dd>@result.Subject, @result.Location</dd>
+            <dt>Év</dt><dd>@result.Year</dd>
+            <dt>Szerződéses érték</dt><dd>@result.Amount</dd>
+            <dt>Túlárazás</dt><dd>@result.Overpricing%</dd>
+            <dt>Uniós forrás</dt><dd>@result.EuShare%</dd>
+            <dt>Szereped</dt><dd>@result.Role</dd>
+            <dt>Ebből lett</dt><dd>@result.Asset</dd>
+            <dt>Kimenetel</dt><dd>@result.Outcome</dd>
+            <dt>Mintaügy</dt><dd>@result.ReferenceCase</dd>
+        </dl>
+
+        <div class="actions">
+            <button type="button" class="ghost" @onclick="Generate">Újrasorsolás</button>
+            <CopyButton Text="@($"Az én közbeszerzésem {result.CaseName} lett volna ({result.Amount}, +{result.Overpricing}% túlárazással). Neked mi? {ShareUrl}")" />
+        </div>
+    </article>
+}
+
+<EventStrip Title="Az időszak közismert ügyei, eseményei" Items="NerWords.Events" />
+
+<footer>
+    Szatíra. A neked generált ügy, cég és szereplők kitaláltak. A „mintaügyek” közismert, nyilvános ügyekre utalnak;
+    tényállításként nem értelmezendők. Semmi nem kerül elküldésre — minden a böngésződben fut.
+</footer>
+
+@code {
+    [Parameter, EditorRequired] public Inputs Input { get; set; } = default!;
+    [Parameter] public string ShareUrl { get; set; } = "";
+
+    private NerCase? result;
+    private int generation;
+
+    private void Generate()
+    {
+        result = NerScandal.Generate(Input);
+        generation++;
+    }
+}
