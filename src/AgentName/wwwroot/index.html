@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mi lett volna az ügynökneved?</title>
+    <meta name="description" content="Szatirikus fedőnév-generátor: mi lett volna az ügynökneved a szocialista Magyarországon?" />
+    <meta property="og:title" content="Mi lett volna az ügynökneved?" />
+    <meta property="og:description" content="Tudd meg a fedőneved, a tartótiszted és hogy mennyi jelentést írtál volna. (Szatíra.)" />
+    <meta name="theme-color" content="#1a0606" />
+    <base href="/" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpolygon fill='%23d31f1f' points='50,5 61,38 96,38 68,59 79,93 50,72 21,93 32,59 4,38 39,38'/%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Oswald:wght@500;700&display=swap" />
+    <link rel="stylesheet" href="css/app.css" />
+    <script type="importmap"></script>
+</head>
+
+<body>
+    <div id="app">
+        <div class="boot">
+            <div class="boot-star"></div>
+            <p>Akta előkeresése az irattárból…</p>
+            <div class="boot-bar"><span></span></div>
+        </div>
+    </div>
+
+    <div id="blazor-error-ui">
+        Hiba történt — valaki jelentett rólunk.
+        <a href="." class="reload">Újratöltés</a>
+        <span class="dismiss">✕</span>
+    </div>
+
+    <script src="_framework/blazor.webassembly#[.{fingerprint}].js" autostart="false"></script>
+    <script>
+        // GitHub Pages cannot serve pre-compressed files with Content-Encoding, so fetch the
+        // .br (or .gz) siblings that `dotnet publish` emits and decompress them natively.
+        (() => {
+            let codec = null;
+            for (const [format, ext] of [['brotli', '.br'], ['gzip', '.gz']]) {
+                try { new DecompressionStream(format); codec = { format, ext }; break; } catch { }
+            }
+            Blazor.start({
+                loadBootResource(type, name, defaultUri, integrity) {
+                    const path = new URL(defaultUri, document.baseURI).pathname;
+                    if (!codec || !(path.endsWith('.wasm') || path.endsWith('.dat'))) return;
+                    return (async () => {
+                        try {
+                            const res = await fetch(defaultUri + codec.ext);
+                            if (!res.ok || !res.body) throw new Error(res.status);
+                            // Some servers (e.g. the dev server) send it with Content-Encoding, so the browser already decoded it.
+                            const body = res.headers.get('content-encoding')
+                                ? res.body
+                                : res.body.pipeThrough(new DecompressionStream(codec.format));
+                            const type = path.endsWith('.wasm') ? 'application/wasm' : 'application/octet-stream';
+                            return new Response(body, { headers: { 'content-type': type } });
+                        } catch {
+                            return fetch(defaultUri);
+                        }
+                    })();
+                }
+            });
+        })();
+    </script>
+</body>
+
+</html>

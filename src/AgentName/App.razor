@@ -1,0 +1,122 @@
+﻿@inject IJSRuntime JS
+@inject NavigationManager Nav
+
+<div class="sky" aria-hidden="true">
+    <div class="rays"></div>
+    <div class="star"></div>
+</div>
+<div class="grain" aria-hidden="true"></div>
+
+<main class="wrap">
+    <header class="hero">
+        <p class="kicker">Belügyminisztérium · III. Főcsoportfőnökség</p>
+        <h1>Mi lett volna az ügynökneved?</h1>
+        <p class="lede">…a szocialista Magyarországon. Töltsd ki az adatlapot — nem kötelező, mi úgyis tudjuk.</p>
+    </header>
+
+    <form class="sheet form" @onsubmit="Generate" @onsubmit:preventDefault>
+        <h2>Személyi adatlap <small>(kitöltése önkéntes)</small></h2>
+        <div class="grid">
+            <label>
+                <span>Név</span>
+                <input type="text" maxlength="60" placeholder="pl. Kovács Pista" autocomplete="off" @bind="input.Name" />
+            </label>
+            <label>
+                <span>Születési év</span>
+                <input type="number" min="1900" max="2030" placeholder="pl. 1956" @bind="input.BirthYear" />
+            </label>
+            <label>
+                <span>Megye</span>
+                <select @bind="input.County">
+                    <option value="">— nem adom meg —</option>
+                    @foreach (var c in WordLists.Counties)
+                    {
+                        <option value="@c.County">@c.County</option>
+                    }
+                </select>
+            </label>
+            <label>
+                <span>Foglalkozás</span>
+                <select @bind="input.Occupation">
+                    <option value="">— nem adom meg —</option>
+                    @foreach (var o in WordLists.Occupations)
+                    {
+                        <option value="@o.Label">@o.Label</option>
+                    }
+                </select>
+            </label>
+            <label class="wide">
+                <span>Kedvenc gyerekkori műsor</span>
+                <select @bind="input.Show">
+                    <option value="">— nem adom meg —</option>
+                    @foreach (var s in WordLists.Shows)
+                    {
+                        <option value="@s.Label">@s.Label</option>
+                    }
+                </select>
+            </label>
+        </div>
+        <button type="submit" class="go">@(dossier is null ? "Akta lekérése" : "Másik akta lekérése")</button>
+    </form>
+
+    @if (dossier is not null)
+    {
+        <article class="sheet dossier" @key="generation" aria-live="polite">
+            <div class="stamp">Szigorúan titkos!</div>
+            <p class="file-no">@dossier.Department · Dosszié: @dossier.FileNumber</p>
+            <p class="label">Fedőnév</p>
+            <h2 class="codename" style="--n:@(dossier.CodeName.Length + 2)"><span class="typed">„@dossier.CodeName”</span></h2>
+
+            <dl>
+                <dt>Alany</dt><dd>@dossier.Subject</dd>
+                <dt>Minősítés</dt><dd>@dossier.Category</dd>
+                <dt>Beszervezve</dt><dd>@dossier.RecruitYear, @dossier.Basis</dd>
+                <dt>Tartótiszt</dt><dd>@dossier.Handler</dd>
+                <dt>Találkozó</dt><dd>@dossier.MeetingPlace</dd>
+                <dt>Célszemély(ek)</dt><dd>@dossier.Target</dd>
+                <dt>Jelentések</dt><dd>@dossier.Reports db</dd>
+                <dt>Jutalom</dt><dd>@dossier.Reward</dd>
+                <dt>Értékelés</dt><dd>@dossier.Remark</dd>
+            </dl>
+
+            <div class="actions">
+                <button type="button" class="ghost" @onclick="Generate">Újrasorsolás</button>
+                <button type="button" class="ghost" @onclick="Copy">@copyLabel</button>
+            </div>
+        </article>
+    }
+
+    <footer>
+        Szatíra. Minden adat véletlenszerűen generált; bármilyen egyezés valós fedőnévvel vagy személlyel a véletlen műve.
+        Semmi nem kerül elküldésre — minden a böngésződben fut.
+    </footer>
+</main>
+
+@code {
+    private readonly Inputs input = new();
+    private Dossier? dossier;
+    private int generation;
+    private string copyLabel = "Másolás";
+
+    private void Generate()
+    {
+        dossier = CodeNameGenerator.Generate(input);
+        generation++;
+        copyLabel = "Másolás";
+    }
+
+    private async Task Copy()
+    {
+        if (dossier is null) return;
+        var text = $"Az ügynöknevem „{dossier.CodeName}” lett volna ({dossier.FileNumber}). Neked mi lett volna? {Nav.BaseUri}";
+        try
+        {
+            await JS.InvokeVoidAsync("navigator.clipboard.writeText", text);
+            copyLabel = "Kimásolva ✓";
+        }
+        catch (JSException)
+        {
+            copyLabel = "Nem sikerült :(";
+        }
+    }
+}

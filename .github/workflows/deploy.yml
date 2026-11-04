@@ -1,0 +1,63 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      # Lets the build relink dotnet.native.wasm without unused runtime features (smaller download).
+      - name: Install wasm-tools workload
+        run: dotnet workload install wasm-tools
+
+      - name: Publish
+        run: dotnet publish src/AgentName -c Release -o out -p:RelinkNative=true
+
+      - name: Prepare site
+        run: |
+          sed -i 's|<base href="/" />|<base href="/${{ github.event.repository.name }}/" />|' out/wwwroot/index.html
+          touch out/wwwroot/.nojekyll
+          fw=out/wwwroot/_framework
+          raw=$(find $fw -type f ! -name '*.br' ! -name '*.gz' -printf '%s\n' | awk '{s+=$1} END {print s}')
+          gz=$(find $fw -type f -name '*.gz' -printf '%s\n' | awk '{s+=$1} END {print s}')
+          br=$(find $fw -type f -name '*.br' -printf '%s\n' | awk '{s+=$1} END {print s}')
+          {
+            echo "### _framework size"
+            echo "| raw | gzip | brotli |"
+            echo "|---|---|---|"
+            echo "| $((raw/1024)) KB | $((gz/1024)) KB | $((br/1024)) KB |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: out/wwwroot
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
