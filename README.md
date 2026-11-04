@@ -15,6 +15,8 @@ satirical generator written in Blazor WebAssembly (.NET 10), hosted on GitHub Pa
 
 Minden mező opcionális; a név és a korszak-specifikus választások fülváltáskor megmaradnak.
 A középkori oldal saját vármegye- és szerepmezőt használ, a mai megye és foglalkozás ott nem jelenik meg.
+A születési év csak a szocializmus és a rendszerváltás oldalon szerepel; a NER és az NVVH oldal nem használja.
+Az NVVH-n a foglalkozás helyett a pozíció van.
 Minden a böngészőben fut, semmi nem kerül elküldésre.
 
 Szatíra: a neked generált fedőnév, ügy, cég és szereplők kitaláltak. A „mintaügyek” és az

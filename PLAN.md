@@ -121,6 +121,7 @@ Egy kis, szatirikus, statikus webapp: „Mi lett volna az ügynökneved a szocia
 - `Generator/MedievalWords.cs` + `MedievalCaseGenerator.cs`; `Eras/KozepkorEra.razor`.
 - `Era.cs` (Kozepkor), `EraTabs.razor` (5 fül + automatikus oldalgörgetés), `App.razor` (bg-med), `Inputs.cs`, `app.css`.
 - Mobilon a fülsáv vízszintesen görgethető; az aktív fül `scrollIntoView`-val középre kerül.
+- A NER és az NVVH oldalról a születési év kikerült; az NVVH-n a foglalkozás helyett a pozíció van (`CommonFields` kapcsolókkal).
 
 ### Biztonsági keret
 - A user a kitalált vádlott; valós személyhez nincs kitalált bűn.

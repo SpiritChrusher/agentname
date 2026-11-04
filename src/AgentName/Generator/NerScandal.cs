@@ -56,8 +56,7 @@ public static class NerScandal
         var boost = connection is { Exponent: > 0 } ? connection.Exponent : 0;
         var amount = rng.LogAmount(8.3 + boost, 10.8 + boost, 1_000_000);
 
-        var minYear = input.BirthYear is int by ? Math.Clamp(by + 18, 2010, 2026) : 2010;
-        var year = rng.Next(minYear, 2027);
+        var year = rng.Next(2010, 2027);
 
         string role, asset;
         if (outsider)

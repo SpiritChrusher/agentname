@@ -8,7 +8,7 @@
 <form class="sheet form" @onsubmit="Generate" @onsubmit:preventDefault>
     <h2>Vagyonvisszaszerzési adatlap <small>(kitöltése önkéntes)</small></h2>
     <div class="grid">
-        <CommonFields Input="Input" />
+        <CommonFields Input="Input" ShowBirthYear="false" ShowOccupation="false" />
         <label>
             <span>Pozíció 2010–2026</span>
             <select @bind="Input.Position">

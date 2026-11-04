@@ -8,8 +8,8 @@
 <form class="sheet form" @onsubmit="Generate" @onsubmit:preventDefault>
     <h2>Ajánlattételi adatlap <small>(kitöltése önkéntes)</small></h2>
     <div class="grid">
-        <CommonFields Input="Input" />
-        <label class="wide">
+        <CommonFields Input="Input" ShowBirthYear="false" />
+        <label>
             <span>Kapcsolati tőke</span>
             <select @bind="Input.Connection">
                 <option value="">— nem adom meg —</option>
