@@ -42,6 +42,7 @@
             <dt>Szereped</dt><dd>@result.Role</dd>
             <dt>Ebből lett</dt><dd>@result.Asset</dd>
             <dt>Kimenetel</dt><dd>@result.Outcome</dd>
+            <dt>Ellenőrzési megjegyzés</dt><dd>@result.Note</dd>
             <dt>Mintaügy</dt><dd>@result.ReferenceCase</dd>
         </dl>
 
@@ -68,7 +69,7 @@
 
     private void Generate()
     {
-        result = NerScandal.Generate(Input);
+        result = NerScandal.Generate(Input, previous: result);
         generation++;
     }
 }

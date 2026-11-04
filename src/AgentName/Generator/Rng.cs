@@ -4,6 +4,13 @@ internal static class Rng
 {
     public static T Pick<T>(this Random rng, T[] items) => items[rng.Next(items.Length)];
 
+    /// <summary>Picks once more if the first result equals <paramref name="avoid"/>.</summary>
+    public static T Pick<T>(this Random rng, T[] items, T? avoid) where T : class
+    {
+        var pick = rng.Pick(items);
+        return items.Length > 1 && EqualityComparer<T>.Default.Equals(pick, avoid) ? rng.Pick(items) : pick;
+    }
+
     public static bool Chance(this Random rng, double p) => rng.NextDouble() < p;
 
     /// <summary>Log-uniform amount between 10^minExp and 10^maxExp, rounded to <paramref name="roundTo"/>.</summary>

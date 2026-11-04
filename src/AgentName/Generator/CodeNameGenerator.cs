@@ -13,14 +13,15 @@ public sealed record Dossier(
     string Target,
     int Reports,
     string Remark,
-    string Reward);
+    string Reward,
+    string Note);
 
 public static class CodeNameGenerator
 {
     private const int FirstYear = 1957;
     private const int LastYear = 1989;
 
-    public static Dossier Generate(Inputs input, Random? random = null)
+    public static Dossier Generate(Inputs input, Random? random = null, Dossier? previous = null)
     {
         var rng = random ?? Random.Shared;
         var name = input.Name?.Trim();
@@ -29,6 +30,7 @@ public static class CodeNameGenerator
         var town = input.Town;
 
         var codeName = MakeCodeName(rng, name, show);
+        if (codeName == previous?.CodeName) codeName = MakeCodeName(rng, name, show);
 
         var birthYear = input.BirthYear is >= 1900 and <= 2030 ? input.BirthYear : null;
         string recruitYear, category, basis;
@@ -65,7 +67,7 @@ public static class CodeNameGenerator
 
         var remark = show is not null && rng.NextDouble() < 0.7
             ? show.Remark
-            : Pick(rng, WordLists.GenericRemarks);
+            : rng.Pick(WordLists.GenericRemarks, previous?.Remark);
 
         var handler = $"{Pick(rng, WordLists.HandlerSurnames)} {Pick(rng, WordLists.HandlerRanks)}";
         var fileNumber = $"{(rng.Next(2) == 0 ? "M" : "B")}-{rng.Next(10000, 100000)}";
@@ -83,7 +85,8 @@ public static class CodeNameGenerator
             Target: target,
             Reports: reports,
             Remark: remark,
-            Reward: Pick(rng, WordLists.Rewards));
+            Reward: rng.Pick(WordLists.Rewards, previous?.Reward),
+            Note: rng.Pick(WordLists.AdminNotes, previous?.Note));
     }
 
     private static string MakeCodeName(Random rng, string? name, WordLists.Show? show)

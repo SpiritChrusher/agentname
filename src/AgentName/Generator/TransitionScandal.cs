@@ -12,23 +12,36 @@ public sealed record TransitionCase(
     string Offshore,
     string Vehicle,
     string Outcome,
-    string ReferenceCase);
+    string ReferenceCase,
+    string Note);
 
 public static class TransitionScandal
 {
-    public static TransitionCase Generate(Inputs input, Random? random = null)
+    public static TransitionCase Generate(Inputs input, Random? random = null, TransitionCase? previous = null)
     {
         var rng = random ?? Random.Shared;
         var surname = input.Surname;
         var car = Array.Find(TransitionWords.Cars, c => c.Label == input.FirstCar);
 
-        var noun = surname is not null && rng.Chance(0.3) ? surname : rng.Pick(TransitionWords.CaseNouns);
-        var (pattern, article) = rng.Pick(TransitionWords.CasePatterns);
-        var caseName = string.Format(pattern, noun);
-        if (article) caseName = Rng.WithArticle(caseName);
+        string MakeCaseName()
+        {
+            var noun = surname is not null && rng.Chance(0.3) ? surname : rng.Pick(TransitionWords.CaseNouns);
+            var (pattern, article) = rng.Pick(TransitionWords.CasePatterns);
+            var name = string.Format(pattern, noun);
+            return article ? Rng.WithArticle(name) : name;
+        }
 
-        var prefix = surname ?? rng.Pick(TransitionWords.CaseNouns);
-        var company = $"{prefix}-{rng.Pick(TransitionWords.CompanyCores)} {rng.Pick(TransitionWords.CompanyKinds)} {rng.Pick(TransitionWords.CompanyForms)}";
+        string MakeCompany()
+        {
+            var prefix = surname ?? rng.Pick(TransitionWords.CaseNouns);
+            return $"{prefix}-{rng.Pick(TransitionWords.CompanyCores)} {rng.Pick(TransitionWords.CompanyKinds)} {rng.Pick(TransitionWords.CompanyForms)}";
+        }
+
+        var caseName = MakeCaseName();
+        if (caseName == previous?.CaseName) caseName = MakeCaseName();
+
+        var company = MakeCompany();
+        if (company == previous?.Company) company = MakeCompany();
 
         var minYear = input.BirthYear is int by ? Math.Clamp(by + 18, 1990, 2009) : 1990;
         var year = rng.Next(minYear, 2010);
@@ -41,7 +54,9 @@ public static class TransitionScandal
         var amount = rng.LogAmount(luxury ? 9 : 6.7, luxury ? 11 : 10.3, 100_000);
 
         var vehicle = car is not null && rng.Chance(0.85) ? car.Vehicle : rng.Pick(TransitionWords.GenericVehicles);
-        var outcome = luxury && rng.Chance(0.7) ? rng.Pick(TransitionWords.LuxuryOutcomes) : rng.Pick(TransitionWords.Outcomes);
+        var outcome = luxury && rng.Chance(0.7)
+            ? rng.Pick(TransitionWords.LuxuryOutcomes, previous?.Outcome)
+            : rng.Pick(TransitionWords.Outcomes, previous?.Outcome);
 
         var town = input.Town;
         var court = town is null || town == "Budapest"
@@ -55,11 +70,12 @@ public static class TransitionScandal
             Court: court,
             Year: year,
             Role: role,
-            Method: rng.Pick(TransitionWords.Methods),
+            Method: rng.Pick(TransitionWords.Methods, previous?.Method),
             Amount: Rng.FormatHuf(amount),
             Offshore: rng.Pick(TransitionWords.Offshores),
             Vehicle: vehicle,
             Outcome: outcome,
-            ReferenceCase: rng.Pick(TransitionWords.ReferenceCases));
+            ReferenceCase: rng.Pick(TransitionWords.ReferenceCases),
+            Note: rng.Pick(TransitionWords.Notes, previous?.Note));
     }
 }

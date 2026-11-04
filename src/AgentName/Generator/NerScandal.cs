@@ -14,11 +14,12 @@ public sealed record NerCase(
     string Asset,
     string Outcome,
     string ReferenceCase,
-    bool Outsider);
+    bool Outsider,
+    string Note);
 
 public static class NerScandal
 {
-    public static NerCase Generate(Inputs input, Random? random = null)
+    public static NerCase Generate(Inputs input, Random? random = null, NerCase? previous = null)
     {
         var rng = random ?? Random.Shared;
         var surname = input.Surname;
@@ -26,21 +27,29 @@ public static class NerScandal
         var connection = Array.Find(NerWords.Connections, c => c.Label == input.Connection);
         var outsider = connection?.Label == NerWords.NoConnection;
 
-        string caseName;
-        if (rng.Chance(0.12))
+        string MakeCaseName()
         {
-            caseName = rng.Pick(NerWords.FixedCaseNames);
-        }
-        else
-        {
+            if (rng.Chance(0.12)) return rng.Pick(NerWords.FixedCaseNames);
+
             var noun = surname is not null && rng.Chance(0.25) ? surname : subject.Noun;
             var (pattern, article) = rng.Pick(NerWords.CasePatterns);
-            caseName = string.Format(pattern, noun);
-            if (article) caseName = Rng.WithArticle(caseName);
+            var name = string.Format(pattern, noun);
+            return article ? Rng.WithArticle(name) : name;
         }
 
-        var winnerName = surname is not null && !outsider ? $"{surname} és Társa" : $"{rng.Pick(NerWords.WinnerCores)} {rng.Pick(NerWords.WinnerKinds)}";
-        var winner = $"{winnerName} {(rng.Chance(0.5) ? "Zrt." : "Kft.")}";
+        string MakeWinner()
+        {
+            var name = surname is not null && !outsider
+                ? $"{surname} és Társa"
+                : $"{rng.Pick(NerWords.WinnerCores)} {rng.Pick(NerWords.WinnerKinds)}";
+            return $"{name} {(rng.Chance(0.5) ? "Zrt." : "Kft.")}";
+        }
+
+        var caseName = MakeCaseName();
+        if (caseName == previous?.CaseName) caseName = MakeCaseName();
+
+        var winner = MakeWinner();
+        if (winner == previous?.Winner) winner = MakeWinner();
 
         var location = input.Town ?? rng.Pick(WordLists.Counties).Town;
 
@@ -76,8 +85,9 @@ public static class NerScandal
             EuShare: rng.Next(0, 19) * 5,
             Role: role,
             Asset: asset,
-            Outcome: rng.Pick(NerWords.Outcomes),
+            Outcome: rng.Pick(NerWords.Outcomes, previous?.Outcome),
             ReferenceCase: rng.Pick(NerWords.ReferenceCases),
-            Outsider: outsider);
+            Outsider: outsider,
+            Note: rng.Pick(NerWords.Notes, previous?.Note));
     }
 }

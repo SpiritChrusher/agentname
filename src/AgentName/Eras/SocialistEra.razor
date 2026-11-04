@@ -40,6 +40,7 @@
             <dt>Jelentések</dt><dd>@dossier.Reports db</dd>
             <dt>Jutalom</dt><dd>@dossier.Reward</dd>
             <dt>Értékelés</dt><dd>@dossier.Remark</dd>
+            <dt>Iktatói megjegyzés</dt><dd>@dossier.Note</dd>
         </dl>
 
         <div class="actions">
@@ -63,7 +64,7 @@
 
     private void Generate()
     {
-        dossier = CodeNameGenerator.Generate(Input);
+        dossier = CodeNameGenerator.Generate(Input, previous: dossier);
         generation++;
     }
 }

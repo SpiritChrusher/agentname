@@ -9,6 +9,10 @@ internal static class TransitionWords
         "Bakelit", "Zsírkréta", "Lekvár", "Mákdaráló", "Videotéka", "Mobiltelefon", "Gázolaj", "Fűtőolaj",
         "Cipőkrém", "Szalámi", "Turistaház", "Zsebrádió", "Tévéantenna", "Üdülőcsekk", "Bálázó", "Kukoricadara",
         "Szőnyegpadló", "Strandpapucs", "Lottózó", "Hűtőmágnes", "Pezsgőgyár", "Ablakkeret",
+        "Fagylaltgép", "Mosógép", "Varrógép", "Benzinkút", "Videokölcsönző", "Számítógép", "Pénztárgép",
+        "Széf", "Kazetta", "Magnetofon", "Színes tévé", "Mosópor", "Téglagyár", "Húsüzem", "Baromfitelep",
+        "Szeszüzem", "Nyomda", "Üveggyár", "Bútoráruház", "Szőnyegbolt", "Autómosó", "Parkolóház",
+        "Halgazdaság", "Műtrágya", "Hűtőház",
     ];
 
     /// <summary>Pattern and whether it takes the definite article.</summary>
@@ -21,10 +25,15 @@ internal static class TransitionWords
         ("{0}-mutyi", true),
         ("{0}-szőkítés", true),
         ("{0}-csomag", true),
+        ("{0}-ügylet", true),
+        ("{0}-biznisz", true),
+        ("{0}-kör", true),
+        ("{0}-panama", true),
+        ("A nagy {0}-mutatvány", false),
     ];
 
-    public static readonly string[] CompanyCores = ["Pannon", "Hungária", "Trans", "Euro", "Duna", "Kárpát", "Inter", "Magyar"];
-    public static readonly string[] CompanyKinds = ["Holding", "Invest", "Trade", "Consulting", "Import-Export", "Vagyonkezelő"];
+    public static readonly string[] CompanyCores = ["Pannon", "Hungária", "Trans", "Euro", "Duna", "Kárpát", "Inter", "Magyar", "Alföld", "Balaton", "Kelet", "Nyugat"];
+    public static readonly string[] CompanyKinds = ["Holding", "Invest", "Trade", "Consulting", "Import-Export", "Vagyonkezelő", "Kereskedőház", "Szolgáltató", "Ingatlan", "Finanszírozó"];
     public static readonly string[] CompanyForms = ["Bt.", "Kft.", "Rt."];
 
     public static readonly string[] Methods =
@@ -38,18 +47,38 @@ internal static class TransitionWords
         "„tanácsadói szerződés” egy kétoldalas tanulmányért",
         "piramisjáték „garantált 30% havi hozammal”",
         "állami földcsere, csak kicsit rossz árfolyamon",
+        "végelszámolás helyett „átalakulás”, ugyanazzal a cégszámmal",
+        "vagyonkezelési szerződés egy vadásztársasággal",
+        "külföldi „szakmai befektető” egy postafiók-cégen keresztül",
+        "önkormányzati ingatlan cseréje bérelt helikopterre",
+        "hitelkérelem saját magadhoz, kedvezményes kamattal",
+        "adásvétel este 22:47-kor, közjegyző nélkül",
+        "apport: egy tervrajz és két szóbeli ígéret",
+        "bérleti szerződés a saját pincére, piaci ár tízszereséért",
+        "„privatizációs tanácsadás” egy eredménytelen pályázat után",
+        "készpénzben, de hivatalosan mégis átutalással",
+        "két cég, egy titkárnő, nulla termelés",
+        "a vevő és az eladó ugyanaz a személy, más kalapban",
+        "osztalékelőleg a még meg sem termelt nyereségből",
+        "végrehajtás alatt álló cég megvásárlása „jelképes” áron",
+        "a telek felét eladtad, a másik felét elajándékoztad magadnak",
     ];
 
     public static readonly string[] Offshores =
     [
         "Ciprus", "Seychelle-szigetek", "Belize", "Brit Virgin-szigetek", "Liechtenstein", "Gibraltár",
         "egy bécsi bankszéf", "Panama", "a sógor pincéje",
+        "Málta", "Monaco", "Andorra", "Svájc", "Hongkong",
+        "a bécsi nagynéni lakása", "egy széfbérlő fiók a belvárosban",
     ];
 
     public static readonly string[] GenericVehicles =
     [
         "nejlonzacskó, kockás", "Postabank-széf", "egy Ikarus csomagtere", "sporttáska, Adidas-utánzat",
         "egy villanyóra-szekrény", "a nagymama befőttesüvegei",
+        "egy hűtőkamion rakománya", "egy üdülői szekrény, a törölközők alatt",
+        "egy lakótelepi garázs, a festékesvödrök mögött", "a vállalati könyvtár egyik lexikona (kivájt)",
+        "egy postai csomag, „könyvek” megjelöléssel", "egy téesz-istálló szénapadlása",
     ];
 
     public sealed record Car(string Label, string Vehicle, bool Luxury);
@@ -75,6 +104,17 @@ internal static class TransitionWords
         "csak egy parlamenti vizsgálóbizottság lett belőle",
         "a cég felszámolás alatt áll — 1998 óta",
         "megúsztad egy közérdekű munkával: tanácsadó lettél",
+        "a cég nyom nélkül felszámolódott",
+        "az adóhivatalt is sikerült kikerülni — egy darabig",
+        "két év múlva ugyanazt a céget nyitottad meg újra",
+        "a tartozás szépen átkerült az új cégre",
+        "a részvényeket a fiókban felejtették, és ott is maradtak",
+        "a bíróság a cég törlését rendelte el, a vagyon addig eltűnt",
+        "egy újságcikk lett belőle a 7. oldalon",
+        "soha senki nem kérdezett semmit",
+        "a jegyzőkönyv szerint minden szabályos volt",
+        "a nyomozás a „fontosabb ügyek” miatt elmaradt",
+        "a védőügyvéd maga is érintett volt",
     ];
 
     public static readonly string[] LuxuryOutcomes =
@@ -82,6 +122,11 @@ internal static class TransitionWords
         "a bíróság jogerősen felmentett",
         "az eljárást megszüntették, a BMW maradt",
         "kitüntetést kaptál „a gazdaság átalakításáért”",
+        "az ügyet lezárták, a hajó a nevemre szólt",
+        "a bíróság felmentett, a számlát a cég fizette",
+        "a nyomozást megszüntették, a svájci számla megmaradt",
+        "a vádiratot visszavonták, a nyaraló maradt",
+        "kitüntetést kaptál, a vagyon pedig külföldön pihen",
     ];
 
     public static readonly Dictionary<string, string> RolesByOccupation = new()
@@ -98,11 +143,18 @@ internal static class TransitionWords
         ["TSZ-tag"] = "a TSZ-vagyon „átalakítója”",
         ["Bolti eladó"] = "az ÁFÉSZ-bolt egyik napról a másikra tulajdonosa",
         ["Nyugdíjas"] = "a cég papíron 84 éves ügyvezetője",
+        ["Titkárnő"] = "a cégjegyzék szerinti „irodavezető”, aki soha nem járt a székhelyen",
+        ["Könyvtáros"] = "a vállalati könyvtár „felszámolásának” kezelője",
+        ["Villanyszerelő"] = "az áramszolgáltató „átalánydíjas” partnere",
+        ["Hentes"] = "a húsüzem privatizációjának első számú haszonélvezője",
     };
 
     public static readonly string[] GenericRoles =
     [
         "strómann", "beltag", "kültag", "ügyvezető", "„tanácsadó”", "az igazgatósági tag sógora",
+        "„stratégiai tanácsadó”", "a cég papíron vezetője, gyakorlatban soha ott sem járt",
+        "a könyvelő, aki mindent „rendben talált”", "az ügyvéd, aki a szerződést fogalmazta",
+        "a szállító, aki soha nem szállított", "a cég egyetlen alkalmazottja, egyben tulajdonosa",
     ];
 
     /// <summary>Well-known public affairs, referenced by name and subject only.</summary>
@@ -118,6 +170,7 @@ internal static class TransitionWords
         "a kárpótlási jegyek piaca (1991-től)",
         "a Zuschlag-ügy (2009)",
         "a sukorói telekcsere-ügy (2009)",
+        "a Baumag-ügy (1996)",
     ];
 
     public static readonly (string Year, string Label)[] Events =
@@ -126,13 +179,41 @@ internal static class TransitionWords
         ("1991", "Kárpótlási törvény"),
         ("1990–", "Spontán privatizáció"),
         ("1990-es évek", "Olajszőkítés"),
+        ("1992", "Egzisztencia-hitel program"),
         ("1995", "Bokros-csomag"),
         ("1996", "Tocsik-ügy"),
+        ("1997", "Hajdú-Bét és a mezőgazdasági cégek csődje"),
         ("1998", "Postabank-ügy"),
+        ("2002", "Devizahitelek térhódítása"),
         ("2003", "K&H brókerbotrány"),
         ("2006", "Őszödi beszéd, utcai zavargások és rendőri fellépés"),
         ("2008", "Gazdasági világválság, IMF-hitel"),
         ("2009", "BKV-ügyek"),
         ("2006–2014", "4-es metró"),
+    ];
+
+    /// <summary>Dry, bureaucratic margin notes shown on the excerpt.</summary>
+    public static readonly string[] Notes =
+    [
+        "A cég székhelye egy pizzéria címe, ahol senki nem hallott róla.",
+        "Az ügyvéd és a közjegyző ugyanaz a személy, két különböző tollal.",
+        "A mérleg két oldala közül csak az egyik van meg.",
+        "A cégtáblát a nyitás előtti napon szerelték fel, a zárás után egy órával le.",
+        "Az alapító okiratban a „tevékenység” rovatban valaki azt írta: „egyéb”.",
+        "A könyvelés szerint nulla forgalom, a tulajdonos szerint „csak baráti segítség”.",
+        "A bélyegző lenyomata három különböző céghez is tartozik.",
+        "A cégjegyzékbe bejegyzett telefon száma egy virágbolté.",
+        "A taggyűlési jegyzőkönyvön nincs dátum, de van rajta kávéfolt.",
+        "Az éves beszámolót kétszer nyújtották be, először ceruzával.",
+        "Az egyik aláírás olvashatatlan, a másik túl szép.",
+        "A cégautó a könyvelésben „bicikliként” szerepel.",
+        "A székhelyváltozásról szóló bejegyzés ugyanaznap kelt, mint a visszavonása.",
+        "A vagyonmérlegben egy „egyéb eszköz” szerepel, összeg nélkül.",
+        "Az üzleti terv egyetlen oldala egy fénymásolt étlap.",
+        "A cégbejegyzéshez csatolták a szomszéd vállalkozó telefonszámát is.",
+        "A záradékban: „a cég a jövőben nem végez semmilyen tevékenységet”.",
+        "A pecsét a fiókban maradt, a szerződést mégis lezárták.",
+        "A cég vezetője papíron 84 éves, telefonon viszont mindig fiatal hang.",
+        "A zárszámadás szerint a nyereség „átszállt a következő évre”, és ott is maradt.",
     ];
 }

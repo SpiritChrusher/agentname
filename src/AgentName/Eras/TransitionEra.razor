@@ -40,6 +40,7 @@
             <dt>A pénz most</dt><dd>@result.Offshore</dd>
             <dt>Szállítva</dt><dd>@result.Vehicle</dd>
             <dt>Kimenetel</dt><dd>@result.Outcome</dd>
+            <dt>Cégjegyzék-megjegyzés</dt><dd>@result.Note</dd>
             <dt>Mintaügy</dt><dd>@result.ReferenceCase</dd>
         </dl>
 
@@ -76,7 +77,7 @@
 
     private void Generate()
     {
-        result = TransitionScandal.Generate(Input);
+        result = TransitionScandal.Generate(Input, previous: result);
         ttDate = $"{result.Year}.{Random.Shared.Next(1, 13):00}.{Random.Shared.Next(1, 29):00} {Random.Shared.Next(0, 24):00}:{Random.Shared.Next(0, 60):00}";
         generation++;
     }
