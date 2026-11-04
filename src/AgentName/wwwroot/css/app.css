@@ -31,6 +31,17 @@
     --ner-gold: #b8912a;
     --ner-red: #ce2939;
     --ner-green: #477050;
+
+    /* NVVH */
+    --nvvh-green: #2f4a3a;
+    --nvvh-red: #a3171a;
+
+    /* Középkor */
+    --med-parchment: #efe3c8;
+    --med-ink: #332517;
+    --med-brown: #5b3d26;
+    --med-red: #8c1d18;
+    --med-gold: #b08a3e;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -48,7 +59,7 @@ body {
 [hidden] { display: none !important; }
 
 /* =================================================================
-   Backgrounds — all three live in the DOM and cross-fade on switch
+   Backgrounds — all five live in the DOM and cross-fade on switch
    ================================================================= */
 
 .bg {
@@ -64,7 +75,9 @@ body {
 
 .app[data-era=szoc] .bg-szoc,
 .app[data-era=rv] .bg-rv,
-.app[data-era=ner] .bg-ner {
+.app[data-era=ner] .bg-ner,
+.app[data-era=nvvh] .bg-nvvh,
+.app[data-era=med] .bg-med {
     opacity: 1;
     visibility: visible;
     transition: opacity .6s ease, visibility 0s;
@@ -224,6 +237,95 @@ body {
     opacity: .9;
 }
 
+/* ---- 2026–: NVVH protocol, seal, redactions ---- */
+
+.bg-nvvh { background: radial-gradient(ellipse at 50% 25%, #26352d 0%, #142019 50%, var(--night) 100%); }
+
+.nvvh-bars {
+    position: absolute;
+    inset: -12%;
+    background: repeating-linear-gradient(-8deg, rgba(10, 14, 11, .55) 0 16px, transparent 16px 120px);
+    -webkit-mask-image: linear-gradient(90deg, #000 0%, transparent 30%, transparent 70%, #000 100%);
+    mask-image: linear-gradient(90deg, #000 0%, transparent 30%, transparent 70%, #000 100%);
+    opacity: .4;
+}
+
+.nvvh-seal {
+    position: absolute;
+    left: 50%;
+    top: 30%;
+    width: min(72vmin, 560px);
+    aspect-ratio: 1;
+    transform: translate(-50%, -50%) rotate(-18deg);
+    border: 3px double rgba(243, 230, 196, .17);
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(3rem, 12vmin, 7rem);
+    letter-spacing: .16em;
+    color: rgba(243, 230, 196, .1);
+}
+
+.nvvh-seal::before {
+    content: "";
+    position: absolute;
+    inset: 18px;
+    border: 1px solid rgba(243, 230, 196, .13);
+    border-radius: 50%;
+}
+
+.nvvh-scan {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(194, 29, 29, .55), transparent);
+    animation: nvvh-scan 9s linear infinite;
+}
+
+@keyframes nvvh-scan {
+    from { top: -4%; }
+    to { top: 104%; }
+}
+
+/* ---- Középkor: scriptorium, illuminated initial, ruled parchment ---- */
+
+.bg-med { background: radial-gradient(ellipse at 50% 25%, #38281a 0%, #1c140e 55%, var(--night) 100%); }
+
+.med-halo {
+    position: absolute;
+    left: 50%;
+    top: 28%;
+    width: min(90vmin, 760px);
+    aspect-ratio: 1;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(176, 138, 62, .22), rgba(176, 138, 62, .06) 55%, transparent 70%);
+    filter: blur(2px);
+}
+
+.med-initial {
+    position: absolute;
+    left: 50%;
+    top: 28%;
+    transform: translate(-50%, -50%);
+    font-family: var(--serif);
+    font-size: min(52vmin, 460px);
+    line-height: 1;
+    color: rgba(176, 138, 62, .1);
+}
+
+.med-lines {
+    position: absolute;
+    inset: 6% -10%;
+    background: repeating-linear-gradient(180deg, rgba(239, 227, 200, .07) 0 2px, transparent 2px 44px);
+    transform: rotate(-2deg);
+    -webkit-mask-image: radial-gradient(ellipse at center, #000 10%, transparent 70%);
+    mask-image: radial-gradient(ellipse at center, #000 10%, transparent 70%);
+}
+
 /* =================================================================
    Era tabs (time machine)
    ================================================================= */
@@ -243,7 +345,7 @@ body {
     display: flex;
     gap: 8px;
     justify-content: center;
-    max-width: 720px;
+    max-width: 1080px;
     margin: 0 auto;
 }
 
@@ -272,6 +374,8 @@ body {
 .tab.active[data-era-tab=rv] { background: var(--tt-yellow); border-color: var(--tt-yellow); color: #000; font-family: var(--pixel); }
 .tab.active[data-era-tab=rv] .tab-years { font-family: var(--pixel); font-size: clamp(1.2rem, 5vw, 1.55rem); }
 .tab.active[data-era-tab=ner] { background: #fff; border-color: var(--ner-yellow); color: var(--ner-blue); box-shadow: inset 0 -4px 0 var(--ner-yellow); }
+.tab.active[data-era-tab=nvvh] { background: #f2efe6; border-color: var(--nvvh-red); color: #1c241f; box-shadow: inset 0 -4px 0 var(--nvvh-red); }
+.tab.active[data-era-tab=med] { background: var(--med-parchment); border-color: var(--med-red); color: var(--med-ink); box-shadow: inset 0 -4px 0 var(--med-red); }
 
 /* =================================================================
    Shared layout (socialist look is the default)
@@ -792,6 +896,183 @@ footer {
 .era-ner footer { color: #fff; }
 
 /* =================================================================
+   2026– theme — NVVH protocol
+   ================================================================= */
+
+.era-nvvh .kicker { color: #e8dfc6; font-family: var(--display); letter-spacing: .12em; opacity: 1; }
+
+.era-nvvh h1 { color: #f1ecdb; text-shadow: 0 3px 0 rgba(0, 0, 0, .35); }
+
+.era-nvvh h1 mark {
+    display: inline-block;
+    background: var(--nvvh-red);
+    color: #f7f2e3;
+    padding: 0 .12em;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    text-shadow: none;
+}
+
+.era-nvvh .lede { color: #e6dfcd; }
+
+.era-nvvh .form {
+    transform: none;
+    background:
+        linear-gradient(90deg, rgba(47, 74, 58, .08) 0 2px, transparent 2px),
+        #f7f4ec;
+    background-size: 32px 100%, auto;
+    border-top: 8px solid var(--nvvh-green);
+    color: #1c241f;
+    box-shadow: 0 20px 46px rgba(0, 0, 0, .5);
+}
+
+.era-nvvh .form h2 { color: var(--nvvh-green); }
+.era-nvvh .form h2 small { color: #5a625a; }
+.era-nvvh label span { color: #5a625a; }
+
+.era-nvvh input, .era-nvvh select { color: #1c241f; border-bottom: 2px solid #b9b5a6; }
+.era-nvvh input::placeholder { color: rgba(90, 98, 90, .55); }
+.era-nvvh input:focus, .era-nvvh select:focus { border-bottom: 2px solid var(--nvvh-red); }
+.era-nvvh select option { background: #f7f4ec; color: #1c241f; }
+
+.era-nvvh .go {
+    background: linear-gradient(180deg, #3c5a47, var(--nvvh-green));
+    box-shadow: 0 4px 0 #1d2f24, 0 8px 18px rgba(0, 0, 0, .35);
+}
+
+.era-nvvh .go:active { box-shadow: 0 1px 0 #1d2f24, 0 4px 10px rgba(0, 0, 0, .35); }
+
+/* NVVH protocol */
+.card-nvvh {
+    background:
+        radial-gradient(ellipse at 100% 0%, rgba(163, 23, 26, .08), transparent 45%),
+        repeating-linear-gradient(180deg, transparent 0 31px, rgba(47, 74, 58, .09) 31px 32px),
+        #f7f4ec;
+    color: #1c241f;
+    border: 1px solid #c9c4b3;
+    outline: 3px double #c9c4b3;
+    outline-offset: -10px;
+    transform: rotate(-.3deg);
+}
+
+.card-nvvh .stamp {
+    --stamp: var(--nvvh-red);
+    border: 4px double var(--nvvh-red);
+    color: var(--nvvh-red);
+    letter-spacing: .12em;
+}
+
+.card-nvvh .file-no, .card-nvvh dt, .card-nvvh .label { color: #5a625a; }
+.card-nvvh .casename { font-family: var(--serif); color: var(--nvvh-green); }
+.card-nvvh dl { border-top: 1px dashed #9aa294; }
+.card-nvvh .ghost { color: var(--nvvh-green); border-color: var(--nvvh-green); }
+.card-nvvh .ghost:hover { background: var(--nvvh-green); color: #f7f2e3; }
+
+.era-nvvh .events h2 { color: #e8dfc6; }
+.era-nvvh .events li { background: rgba(247, 244, 236, .94); color: #1c241f; border: 0; border-left: 4px solid var(--nvvh-red); }
+.era-nvvh footer { color: #e8dfc6; }
+
+/* =================================================================
+   Középkor theme — chronicle and wax seal
+   ================================================================= */
+
+.era-med { font-family: Georgia, "Times New Roman", serif; }
+.era-med .kicker { color: #d9c49a; font-family: var(--display); letter-spacing: .16em; opacity: 1; }
+
+.era-med h1 {
+    color: #f0e4c8;
+    font-family: var(--serif);
+    text-transform: none;
+    letter-spacing: 0;
+    text-shadow: 0 3px 0 rgba(0, 0, 0, .35);
+}
+
+.era-med h1 mark {
+    display: inline-block;
+    background: var(--med-red);
+    color: #f7edd5;
+    padding: 0 .12em;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    text-shadow: none;
+}
+
+.era-med .lede { color: #e3d5b6; }
+
+.era-med .form {
+    transform: none;
+    background:
+        radial-gradient(ellipse at 20% 0%, rgba(176, 138, 62, .12), transparent 55%),
+        var(--med-parchment);
+    border-top: 8px solid var(--med-brown);
+    color: var(--med-ink);
+    box-shadow: 0 20px 46px rgba(0, 0, 0, .5);
+}
+
+.era-med .form h2 { color: var(--med-brown); font-family: var(--serif); font-weight: 700; }
+.era-med .form h2 small { color: #6b5135; font-family: var(--mono); }
+.era-med label span { color: #6b5135; }
+
+.era-med input, .era-med select {
+    font-family: Georgia, "Times New Roman", serif;
+    color: var(--med-ink);
+    border-bottom: 2px solid #b9a582;
+}
+
+.era-med input::placeholder { color: rgba(107, 81, 53, .55); }
+.era-med input:focus, .era-med select:focus { border-bottom: 2px solid var(--med-red); }
+.era-med select option { background: var(--med-parchment); color: var(--med-ink); }
+
+.era-med .go {
+    background: linear-gradient(180deg, #a52620, var(--med-red));
+    color: #f7edd5;
+    font-family: var(--serif);
+    letter-spacing: .08em;
+    box-shadow: 0 4px 0 #5e100d, 0 8px 18px rgba(0, 0, 0, .35);
+}
+
+.era-med .go:active { box-shadow: 0 1px 0 #5e100d, 0 4px 10px rgba(0, 0, 0, .35); }
+
+/* medieval chronicle card */
+.card-med {
+    background:
+        radial-gradient(ellipse at 100% 0%, rgba(140, 29, 24, .07), transparent 45%),
+        var(--med-parchment);
+    color: var(--med-ink);
+    border: 1px solid #c3ab84;
+    outline: 3px double #c3ab84;
+    outline-offset: -10px;
+    transform: rotate(-.3deg);
+}
+
+.card-med .stamp {
+    --stamp: var(--med-red);
+    width: 96px;
+    height: 96px;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border: 4px double var(--med-red);
+    border-radius: 50%;
+    color: var(--med-red);
+    font-size: .95rem;
+    letter-spacing: .06em;
+    background: radial-gradient(circle, rgba(140, 29, 24, .1), transparent 70%);
+    mix-blend-mode: normal;
+}
+
+.card-med .file-no, .card-med dt, .card-med .label { color: #6b5135; }
+.card-med .casename { font-family: var(--serif); color: var(--med-brown); }
+.card-med .casename::first-letter { font-size: 1.8em; line-height: .9; color: var(--med-red); font-weight: 700; }
+.card-med dl { border-top: 1px dashed #b9a582; }
+.card-med .ghost { color: var(--med-brown); border-color: var(--med-brown); }
+.card-med .ghost:hover { background: var(--med-brown); color: var(--med-parchment); }
+
+.era-med .events h2 { color: #e3d5b6; }
+.era-med .events li { background: rgba(239, 227, 200, .94); color: var(--med-ink); border: 0; border-left: 4px solid var(--med-red); }
+.era-med footer { color: #e3d5b6; }
+
+/* =================================================================
    Boot screen + error bar
    ================================================================= */
 
@@ -851,6 +1132,20 @@ footer {
    Responsive & motion
    ================================================================= */
 
+@media (max-width: 760px) {
+    .tabs-inner {
+        justify-content: flex-start;
+        overflow-x: auto;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x proximity;
+        padding-bottom: 2px;
+    }
+
+    .tabs-inner::-webkit-scrollbar { display: none; }
+    .tab { flex: 1 0 92px; max-width: none; scroll-snap-align: center; }
+}
+
 @media (max-width: 560px) {
     .grid { grid-template-columns: 1fr; }
     dl { grid-template-columns: 1fr; gap: 2px; }
@@ -860,7 +1155,11 @@ footer {
     .form, .dossier, .card { transform: none; }
     .tabs { padding: 8px; }
     .tabs-inner { gap: 6px; }
-    .tab-label { font-size: .62rem; letter-spacing: .06em; }
+    .tab { padding: 6px 4px; }
+    .tab-years { font-size: clamp(.85rem, 3.2vw, 1rem); }
+    .tab-label { font-size: .55rem; letter-spacing: .04em; }
+    .card-nvvh .file-no { margin-top: 72px; }
+    .card-med .file-no { margin-top: 96px; }
     .tt-header { flex-wrap: wrap; }
     @keyframes slide-in {
         from { opacity: 0; transform: translateY(40px); }
@@ -869,7 +1168,7 @@ footer {
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .rays, .star, .boot-star, .tt-mosaic, .crt, .eu-stars, .slogans p, .ribbon, .ticker-track { animation: none; }
+    .rays, .star, .boot-star, .tt-mosaic, .crt, .eu-stars, .slogans p, .ribbon, .ticker-track, .nvvh-scan { animation: none; }
     .era, .dossier, .card, .stamp, .casename { animation: none; }
     .bg { transition: none; }
     .typed { animation: none; width: auto; border-right: 0; }

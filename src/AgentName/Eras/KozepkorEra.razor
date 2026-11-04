@@ -1,0 +1,96 @@
+<header class="hero">
+    <p class="kicker">Anno Domini · Magyar Királyság · Chronica Hungarorum</p>
+    <h1>Mi lett volna <mark>a te ügyed?</mark></h1>
+    <p class="lede">…a középkori Magyarországon. Töltsd ki az adatlapot — a krónikás úgyis feljegyzi,
+        a pecsét pedig megmarad.</p>
+</header>
+
+<form class="sheet form" @onsubmit="Generate" @onsubmit:preventDefault>
+    <h2>Középkori adatlap <small>(kitöltése önkéntes)</small></h2>
+    <div class="grid">
+        <label>
+            <span>Név</span>
+            <input type="text" maxlength="60" placeholder="pl. Kis István" autocomplete="off" @bind="Input.Name" />
+        </label>
+        <label>
+            <span>Vármegye</span>
+            <select @bind="Input.MedievalCounty">
+                <option value="">— nem adom meg —</option>
+                @foreach (var county in MedievalWords.Counties)
+                {
+                    <option value="@county">@county</option>
+                }
+            </select>
+        </label>
+        <label>
+            <span>Ügy típusa</span>
+            <select @bind="Input.MedievalMode">
+                <option value="">— nem adom meg —</option>
+                @foreach (var m in MedievalWords.Modes)
+                {
+                    <option value="@m.Label">@m.Label</option>
+                }
+            </select>
+        </label>
+        <label>
+            <span>Szereped</span>
+            <select @bind="Input.MedievalRole">
+                <option value="">— nem adom meg —</option>
+                @foreach (var r in MedievalWords.Roles)
+                {
+                    <option value="@r.Label">@r.Label</option>
+                }
+            </select>
+        </label>
+    </div>
+    <button type="submit" class="go">@(result is null ? "Krónikába vétel" : "Újabb bejegyzés")</button>
+</form>
+
+@if (result is not null)
+{
+    <article class="sheet card card-med" @key="generation" aria-live="polite">
+        <div class="stamp">Sigillum</div>
+        <p class="file-no">@result.Entry</p>
+        <p class="label">Az ügy neve</p>
+        <h2 class="casename">@result.CaseName</h2>
+
+        <dl>
+            <dt>Alany</dt><dd>@result.Subject</dd>
+            <dt>Szerep</dt><dd>@result.Role</dd>
+            <dt>Korszak</dt><dd>@result.Period</dd>
+            <dt>Vármegye</dt><dd>@result.Location</dd>
+            <dt>@result.AccusationTitle</dt><dd>@result.Accusation</dd>
+            <dt>@result.DetailTitle</dt><dd>@result.Detail</dd>
+            <dt>@result.OutcomeTitle</dt><dd>@result.Outcome</dd>
+            <dt>A krónika mondja</dt><dd>@result.ChroniclerNote</dd>
+            <dt>Mintaesemény</dt><dd>@result.ReferenceCase</dd>
+        </dl>
+
+        <div class="actions">
+            <button type="button" class="ghost" @onclick="Generate">Újrasorsolás</button>
+            <CopyButton Text="@($"A krónika szerint az én ügyem {result.CaseName} lett volna ({result.Accusation}). Neked mi? {ShareUrl}")" />
+        </div>
+    </article>
+}
+
+<EventStrip Title="Anno Domini — a korszak eseményei" Items="MedievalWords.Events" />
+
+<footer>
+    Szatíra. A generált ügy, a vádak és az ítéletek kitaláltak. Valós történelmi eseményekre csak
+    „mintaeseményként” utalunk; a középkori büntetések és a krónikás anakronizmusai a szatíra részei.
+    Semmi nem kerül elküldésre — minden a böngésződben fut.
+</footer>
+
+@code {
+    [Parameter, EditorRequired] public Inputs Input { get; set; } = default!;
+    [Parameter] public string ShareUrl { get; set; } = "";
+
+    private MedievalCase? result;
+    private int generation;
+
+    private void Generate()
+    {
+        result = MedievalCaseGenerator.Generate(Input, previous: result);
+        generation++;
+    }
+}

@@ -3,6 +3,12 @@
 @inject IJSRuntime JS
 
 <div class="app" data-era="@EraInfo.Key(era)">
+    <div class="bg bg-med" aria-hidden="true">
+        <div class="med-halo"></div>
+        <div class="med-initial">M</div>
+        <div class="med-lines"></div>
+        <div class="grain"></div>
+    </div>
     <div class="bg bg-szoc" aria-hidden="true">
         <div class="rays"></div>
         <div class="star"></div>
@@ -36,10 +42,19 @@
             <rect x="415" y="0" width="8" height="40" /><rect x="777" y="0" width="8" height="40" />
         </svg>
     </div>
+    <div class="bg bg-nvvh" aria-hidden="true">
+        <div class="nvvh-bars"></div>
+        <div class="nvvh-seal">NVVH</div>
+        <div class="nvvh-scan"></div>
+        <div class="grain"></div>
+    </div>
 
     <EraTabs Current="era" OnSelect="Select" />
 
     <main class="wrap">
+        <section class="era era-med" hidden="@(era != Era.Kozepkor)">
+            <KozepkorEra Input="input" ShareUrl="@Share(Era.Kozepkor)" />
+        </section>
         <section class="era era-szoc" hidden="@(era != Era.Szoc)">
             <SocialistEra Input="input" ShareUrl="@Share(Era.Szoc)" />
         </section>
@@ -48,6 +63,9 @@
         </section>
         <section class="era era-ner" hidden="@(era != Era.Ner)">
             <NerEra Input="input" ShareUrl="@Share(Era.Ner)" />
+        </section>
+        <section class="era era-nvvh" hidden="@(era != Era.Nvvh)">
+            <NvvhEra Input="input" ShareUrl="@Share(Era.Nvvh)" />
         </section>
     </main>
 </div>

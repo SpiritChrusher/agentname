@@ -1,3 +1,5 @@
+@inject IJSRuntime JS
+
 <nav class="tabs" aria-label="Korszak">
     <div class="tabs-inner" role="tablist" @onkeydown="OnKey">
         @foreach (var era in EraInfo.All)
@@ -17,13 +19,21 @@
     [Parameter] public Era Current { get; set; }
     [Parameter] public EventCallback<Era> OnSelect { get; set; }
 
-    private readonly ElementReference[] refs = new ElementReference[3];
+    private readonly ElementReference[] refs = new ElementReference[EraInfo.All.Length];
+    private Era lastScrolled = (Era)(-1);
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (lastScrolled == Current) return;
+        lastScrolled = Current;
+        try { await JS.InvokeVoidAsync("scrollTabIntoView", refs[(int)Current]); } catch (JSException) { }
+    }
 
     private async Task OnKey(KeyboardEventArgs e)
     {
         var delta = e.Key switch { "ArrowRight" => 1, "ArrowLeft" => -1, _ => 0 };
         if (delta == 0) return;
-        var next = (Era)(((int)Current + delta + 3) % 3);
+        var next = (Era)(((int)Current + delta + EraInfo.All.Length) % EraInfo.All.Length);
         await OnSelect.InvokeAsync(next);
         await refs[(int)next].FocusAsync();
     }

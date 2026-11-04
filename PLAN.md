@@ -88,3 +88,41 @@ Egy kis, szatirikus, statikus webapp: „Mi lett volna az ügynökneved a szocia
 - Méret: a gzip `_framework` kb. 2,49 MB-ról 2,51 MB-ra nőtt (+20 KB).
 - A dev szerveres betöltési hiba (dupla dekompresszió) javítva.
 - Nincs commit. A push és a GitHub Pages beállítás (Settings → Pages → Source: GitHub Actions) még hátravan; a CI-s `wasm-tools` relinkelés még nem futott le.
+
+## 6. Negyedik korszak: NVVH (2026–)
+
+### Kérés és döntések
+- 2026. áprilisi kormányváltás utáni oldal: Fidesz-KDNP politikusként milyen ügy miatt vinne el az NVVH.
+- Extra mezők: „Pozíció 2010–2026” és „Holdudvar / kapcsolat”.
+- Dizájn: NVVH eljárási jegyzőkönyv, fehér irat, piros „LEFOGLALVA” pecsét, redakciós háttér.
+- Fül: `2026–` / `Vagyonvisszaszerzés`; hash: `#vagyonvisszaszerzes`; `data-era=nvvh`.
+
+### Kód
+- `Generator/NvvhWords.cs` + `NvvhCaseGenerator.cs` (ügynév, vádpont, ügylet, összeg, lefoglalt vagyon, nyomozó, eljárási szakasz, megjegyzés).
+- `Eras/NvvhEra.razor`; `Era.cs`, `EraTabs.razor` (4 elemű refs/modulo), `App.razor` (bg-nvvh), `Inputs.cs` (Position, Holdudvar), `app.css`.
+- Mintaügyek: a meglévő `NerWords.ReferenceCases` újrahasználva, új valós tényállítás nélkül.
+- Anti-repeat: `previous` + `Rng.Pick(..., avoid)`, mint a többi korszakban.
+
+### Biztonsági keret
+- Nincs valós személynév a generált ügyekben; a hivatal, a vádlott-szerep és az eseménysáv fikció.
+- Valós ügyek csak közismert, nyilvános „mintaügy” névvel/tárggyal; nincs Btk.-paragrafus és nincs valós cég-/ügyszám.
+- Footer + README disclaimer jelzi, hogy valós személyhez nem rendelünk kitalált cselekményt.
+
+## 7. Ötödik korszak: Középkor (1000–1526)
+
+### Kérés és döntések
+- Egy új, időrendben első oldal két móddal: „Királyi ítélet” (Szent István kora) és „Parasztlázadás” (Dózsa kora).
+- Extra mezők: „Ügy típusa” és „Szereped”; a közös mezők megmaradnak fülváltáskor.
+- Középkori űrlap: Név, Vármegye, Ügy típusa, Szereped; a modern megye/foglalkozás és a születési év nem jelenik meg (a foglalkozást a szerep váltja ki).
+- Dizájn: pergamen, viaszpecsét, iniciálé, krónikás hangvétel; középkori helyesírású nevek (Anno Domini, Chronica, caput, latin ügynév-tövek).
+- A felnégyelés csak a lázadás-módban korszakos; a királyi módban jelölt anakronizmus.
+
+### Kód
+- `Generator/MedievalWords.cs` + `MedievalCaseGenerator.cs`; `Eras/KozepkorEra.razor`.
+- `Era.cs` (Kozepkor), `EraTabs.razor` (5 fül + automatikus oldalgörgetés), `App.razor` (bg-med), `Inputs.cs`, `app.css`.
+- Mobilon a fülsáv vízszintesen görgethető; az aktív fül `scrollIntoView`-val középre kerül.
+
+### Biztonsági keret
+- A user a kitalált vádlott; valós személyhez nincs kitalált bűn.
+- Valós események (Szent István törvényei, Vata-felkelés, Aranybulla, tatárjárás, Dózsa 1514, Mohács 1526) csak mintaeseményként.
+- Nincs etnikai/vallási csoportot célzó vád; az anakronizmus és a szatíra jelölve.

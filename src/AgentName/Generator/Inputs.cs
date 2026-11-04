@@ -12,6 +12,11 @@ public sealed class Inputs
     public string Show { get; set; } = "";
     public string FirstCar { get; set; } = "";
     public string Connection { get; set; } = "";
+    public string Position { get; set; } = "";
+    public string Holdudvar { get; set; } = "";
+    public string MedievalMode { get; set; } = "";
+    public string MedievalRole { get; set; } = "";
+    public string MedievalCounty { get; set; } = "";
 
     /// <summary>First word of the name (Hungarian order: surname first), or null.</summary>
     public string? Surname

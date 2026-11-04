@@ -1,0 +1,86 @@
+<header class="hero">
+    <p class="kicker">NVVH · Nemzeti Vagyonvisszaszerzési és Vagyonvédelmi Hivatal</p>
+    <h1>Mi lett volna <mark>a te ügyed?</mark></h1>
+    <p class="lede">…a 2026. áprilisi kormányváltás után. Fidesz-KDNP politikusként — a hivatal szerint — nem
+        vagyonkezelés volt, hanem ügy. Az adatlap önkéntes; a lefoglalási jegyzék úgyis elkészül.</p>
+</header>
+
+<form class="sheet form" @onsubmit="Generate" @onsubmit:preventDefault>
+    <h2>Vagyonvisszaszerzési adatlap <small>(kitöltése önkéntes)</small></h2>
+    <div class="grid">
+        <CommonFields Input="Input" />
+        <label>
+            <span>Pozíció 2010–2026</span>
+            <select @bind="Input.Position">
+                <option value="">— nem adom meg —</option>
+                @foreach (var p in NvvhWords.Positions)
+                {
+                    <option value="@p.Label">@p.Label</option>
+                }
+            </select>
+        </label>
+        <label>
+            <span>Holdudvar / kapcsolat</span>
+            <select @bind="Input.Holdudvar">
+                <option value="">— nem adom meg —</option>
+                @foreach (var h in NvvhWords.Holdudvars)
+                {
+                    <option value="@h.Label">@h.Label</option>
+                }
+            </select>
+        </label>
+    </div>
+    <button type="submit" class="go">@(result is null ? "Eljárás indítása" : "Újabb eljárás indítása")</button>
+</form>
+
+@if (result is not null)
+{
+    <article class="sheet card card-nvvh" @key="generation" aria-live="polite">
+        <div class="stamp">Lefoglalva</div>
+        <p class="file-no">Eljárási jegyzőkönyv · @result.FileNo</p>
+        <p class="label">Az ügy neve</p>
+        <h2 class="casename">@result.CaseName</h2>
+
+        <dl>
+            <dt>Alany</dt><dd>@result.Subject</dd>
+            <dt>Pozíció (2010–2026)</dt><dd>@result.Position</dd>
+            <dt>Holdudvar</dt><dd>@result.Holdudvar</dd>
+            <dt>Vádpont</dt><dd>@result.Charge</dd>
+            <dt>Ügylet</dt><dd>@result.Method</dd>
+            <dt>Időszak</dt><dd>@result.Period</dd>
+            <dt>Elkövetési érték</dt><dd>@result.Amount</dd>
+            <dt>Lefoglalt vagyon</dt><dd>@result.SeizedAsset</dd>
+            <dt>Nyomozó</dt><dd>@result.Investigator</dd>
+            <dt>Eljárási szakasz</dt><dd>@result.Stage</dd>
+            <dt>Mintaügy</dt><dd>@result.ReferenceCase</dd>
+            <dt>Megjegyzés</dt><dd>@result.Note</dd>
+        </dl>
+
+        <div class="actions">
+            <button type="button" class="ghost" @onclick="Generate">Újrasorsolás</button>
+            <CopyButton Text="@($"Az NVVH szerint az én ügyem {result.CaseName} lett volna ({result.Charge}, {result.Amount}). Neked mi? {ShareUrl}")" />
+        </div>
+    </article>
+}
+
+<EventStrip Title="A 2026-os átmenet eseményei (fikció)" Items="NvvhWords.Events" />
+
+<footer>
+    Szatíra. Az NVVH-eljárás, a vádpontok, a szereplők és a vagyonok kitaláltak. Valós, közismert ügyekre csak
+    „mintaügyként”, névvel és tárggyal utalunk; valós személyhez nem rendelünk kitalált cselekményt.
+    Semmi nem kerül elküldésre — minden a böngésződben fut.
+</footer>
+
+@code {
+    [Parameter, EditorRequired] public Inputs Input { get; set; } = default!;
+    [Parameter] public string ShareUrl { get; set; } = "";
+
+    private NvvhCase? result;
+    private int generation;
+
+    private void Generate()
+    {
+        result = NvvhCaseGenerator.Generate(Input, previous: result);
+        generation++;
+    }
+}
