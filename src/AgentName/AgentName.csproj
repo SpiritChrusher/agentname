@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <OverrideHtmlAssetPlaceholders>true</OverrideHtmlAssetPlaceholders>
+    <ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
   </PropertyGroup>
 
   <!-- Size: aggressive trimming, no AOT (AOT makes Blazor WASM downloads larger). -->
@@ -36,6 +37,10 @@
     <EmccCompileOptimizationFlag>-Oz</EmccCompileOptimizationFlag>
     <EmccLinkOptimizationFlag>-Oz</EmccLinkOptimizationFlag>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.13" />

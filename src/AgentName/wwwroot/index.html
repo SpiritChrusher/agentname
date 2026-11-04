@@ -9,6 +9,11 @@
     <meta property="og:title" content="Történelmi Ügyosztály – Mi lett volna az ügyed?" />
     <meta property="og:description" content="Öt korszak, öt irat: mi lett volna a te ügyed? (Szatíra.)" />
     <meta name="theme-color" content="#1a0606" />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Ügyosztály" />
     <base href="/" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpolygon fill='%23d31f1f' points='50,5 61,38 96,38 68,59 79,93 50,72 21,93 32,59 4,38 39,38'/%3E%3C/svg%3E" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -40,6 +45,11 @@
             el.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
         };
     </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service-worker.js');
+        }
+    </script>
     <script src="_framework/blazor.webassembly#[.{fingerprint}].js" autostart="false"></script>
     <script>
         // GitHub Pages cannot serve pre-compressed files with Content-Encoding, so fetch the
@@ -52,7 +62,7 @@
             Blazor.start({
                 loadBootResource(type, name, defaultUri, integrity) {
                     const path = new URL(defaultUri, document.baseURI).pathname;
-                    if (!codec || !(path.endsWith('.wasm') || path.endsWith('.dat'))) return;
+                    if (!codec || !navigator.onLine || !(path.endsWith('.wasm') || path.endsWith('.dat'))) return;
                     return (async () => {
                         try {
                             const res = await fetch(defaultUri + codec.ext);

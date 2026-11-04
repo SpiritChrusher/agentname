@@ -36,6 +36,13 @@ szöveg jelöli.
 dotnet run --project src/AgentName
 ```
 
+## PWA
+
+Installable (manifest + icons + service worker). After the first online load the app shell is cached
+and the app works offline. A new deploy is picked up on the next reload; the old cache is deleted.
+On GitHub Pages the `<base href>` is rewritten **before** publish, so the generated
+`service-worker-assets.js` integrity hashes stay valid.
+
 ## Size
 
 No AOT on purpose: AOT makes Blazor WASM downloads bigger. Instead:

@@ -132,3 +132,10 @@ Egy kis, szatirikus, statikus webapp: „Mi lett volna az ügynökneved a szocia
 - A látható appnév **Történelmi Ügyosztály**, alcím **Mi lett volna az ügyed?**
 - A belső projekt/névtér `AgentName` marad; a GitHub Pages URL csak repóátnevezéskor változik.
 - Érintett: `index.html` (title, meta/OG, boot felirat), `README.md`; a későbbi PWA-manifest ezt a nevet használja.
+
+## 9. PWA
+- `manifest.json` + csillag ikonok (192, 512, maskable 512, Apple 180); `display: standalone`.
+- Fejlesztésben no-op `service-worker.js`; publikáláskor a Blazor SDK által generált `service-worker-assets.js`-t használó cache-elő SW.
+- Offline app shell; a `.br`/`.gz` boot fájlok runtime cache-be kerülnek (a precache az eredeti asseteket tartalmazza).
+- Új verzió a következő betöltésnél; a régi cache törlődik.
+- CI: a base href cseréje publish előtt történik, hogy az `index.html` integritás-hash stimmeljen.

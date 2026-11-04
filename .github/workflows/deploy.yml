@@ -28,12 +28,16 @@ jobs:
       - name: Install wasm-tools workload
         run: dotnet workload install wasm-tools
 
+      # Rewrite the base href before publish: the generated service-worker-assets.js
+      # must contain the hash of the final index.html, otherwise SW install fails.
+      - name: Set base href
+        run: sed -i 's|<base href="/" />|<base href="/${{ github.event.repository.name }}/" />|' src/AgentName/wwwroot/index.html
+
       - name: Publish
         run: dotnet publish src/AgentName -c Release -o out -p:RelinkNative=true
 
       - name: Prepare site
         run: |
-          sed -i 's|<base href="/" />|<base href="/${{ github.event.repository.name }}/" />|' out/wwwroot/index.html
           touch out/wwwroot/.nojekyll
           fw=out/wwwroot/_framework
           raw=$(find $fw -type f ! -name '*.br' ! -name '*.gz' -printf '%s\n' | awk '{s+=$1} END {print s}')
